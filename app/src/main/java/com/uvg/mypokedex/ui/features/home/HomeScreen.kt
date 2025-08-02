@@ -1,5 +1,7 @@
 package com.uvg.mypokedex.ui.features.home
 
+
+
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
@@ -17,10 +19,8 @@ fun HomeScreen(viewModel: HomeViewModel = HomeViewModel()){
         columns = GridCells.Fixed(2)
     ) {
         items(pokemonList) {
-            pokemon ->
+                pokemon ->
             PokemonCard(pokemon)
         }
     }
 }
-
-
