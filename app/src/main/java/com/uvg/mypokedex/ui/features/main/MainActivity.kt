@@ -11,7 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.uvg.mypokedex.ui.theme.MyPokedexTheme
+import com.uvg.mypokedex.ui.features.home.HomeScreen
+import com.uvg.mypokedex.ui.theme.MyPokedex
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
+                    HomeScreen()
                 }
             }
         }
