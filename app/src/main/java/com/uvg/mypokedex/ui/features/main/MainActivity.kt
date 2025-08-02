@@ -1,4 +1,4 @@
-package com.uvg.mypokedex
+package com.uvg.mypokedex.ui.features.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.uvg.mypokedex.ui.features.home.HomeScreen
-import com.uvg.mypokedex.ui.theme.MyPokedex
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
