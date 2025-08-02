@@ -1,6 +1,6 @@
 package com.uvg.mypokedex.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
+    import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,10 +39,10 @@ fun PokemonCard(pokemon: Pokemon) {
             verticalArrangement = Arrangement.Center
         ) {
             // Imagen
-            AsyncImage(
-                model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png",
-                contentDescription = "Imagen de ${pokemon.name}",
-                modifier = Modifier.size(120.dp)
+        AsyncImage(
+            model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png",
+            contentDescription = "Imagen de ${pokemon.name}",
+            modifier = Modifier.size(120.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
