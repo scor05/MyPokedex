@@ -1,4 +1,4 @@
-package com.uvg.mypokedex.ui.features.home
+package com.uvg.mypokedex.ui.features.main
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -6,8 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import com.uvg.mypokedex.ui.features.home.HomeScreen
 import com.uvg.mypokedex.ui.theme.MyPokedexTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,7 +19,6 @@ class MainActivity : ComponentActivity() {
                 Scaffold { innerPadding ->
                     HomeScreen(modifier = Modifier.padding(innerPadding))
                 }
-
             }
         }
     }
