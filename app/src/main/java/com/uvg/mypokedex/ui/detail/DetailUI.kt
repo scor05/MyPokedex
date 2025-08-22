@@ -10,13 +10,23 @@ import com.uvg.mypokedex.data.*
 import androidx.compose.foundation.layout.*
 
 
+@Composable
+fun FavoriteButton(onClick: () -> Unit) {
+    IconButton(onClick = onClick) {
+        Text("❤")
+    }
+}
 
 @Composable
-fun TopBar(pokemonName: String) {
-    TopAppBar(
-        title = {   Text(pokemonName)},
-        navigationIcon = { IconButton(onClick = {})  { Text("<") }},
-        actions = { IconButton(onClick = {}) {Text(" \\u2764\\ufe0f") }}
+fun TopBar(pokemonName: String, showFavorite: Boolean = true) {
+    CenterAlignedTopAppBar(
+        title = { Text(pokemonName) },
+        navigationIcon = { IconButton(onClick = { }) { Text("<") } },
+        actions = {
+            if (showFavorite) {
+                FavoriteButton { }
+            }
+        }
     )
 }
 
@@ -27,6 +37,7 @@ fun PokemonMeasurements(height: Float, weight: Float){
         Text(text = "Weight: $weight kg")
     }
 }
+
 
 @Composable
 fun PokemonRow(stat: Stat){
