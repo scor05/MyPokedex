@@ -7,6 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uvg.mypokedex.ui.components.PokemonCard
 import com.uvg.mypokedex.ui.components.UnstablePokemonList
+import kotlin.random.Random
+
 
 @Composable
 fun HomeScreen(
@@ -14,7 +16,11 @@ fun HomeScreen(
     viewModel: HomeViewModel = HomeViewModel()
 ) {
     val pokemonList = viewModel.getPokemonList()
-    val pokemonNames = listOf(pokemonList)
+    val pokemonNames = pokemonList.map { it.name }
+
+    for (string in pokemonNames){
+        print(string)
+    }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -25,7 +31,7 @@ fun HomeScreen(
     ) {
         items(pokemonList) { pokemon ->
             PokemonCard(pokemon)
-            UnstablePokemonList(pokemonList)
+            UnstablePokemonList(pokemonNames, Random.nextInt(0, 0xFFFFFF))
         }
     }
 }
