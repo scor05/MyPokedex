@@ -3,6 +3,7 @@ package com.uvg.mypokedex.ui.features.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uvg.mypokedex.ui.components.PokemonCard
@@ -16,11 +17,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = HomeViewModel()
 ) {
     val pokemonList = viewModel.getPokemonList()
-    val pokemonNames = pokemonList.map { it.name }
-
-    for (string in pokemonNames){
-        print(string)
-    }
+    // Remember en la lista para que sea inmutable
+    val pokemonNames = remember (pokemonList) { pokemonList.map { it.name } }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -29,9 +27,12 @@ fun HomeScreen(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxSize()
     ) {
+        // Sacar el UnstablePokemonList del bucle
+        item {
+            UnstablePokemonList(pokemonNames)
+        }
         items(pokemonList) { pokemon ->
             PokemonCard(pokemon)
-            UnstablePokemonList(pokemonNames, Random.nextInt(0, 0xFFFFFF))
         }
     }
 }
