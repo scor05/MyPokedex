@@ -12,3 +12,8 @@ data class Stat(
     val name: String,
     val value: Int
 )
+
+data class PokemonStat(
+    val name: String,
+    val value: Int
+)

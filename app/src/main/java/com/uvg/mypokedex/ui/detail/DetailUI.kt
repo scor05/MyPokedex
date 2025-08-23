@@ -49,3 +49,4 @@ fun PokemonRow(stat: Stat){
         )
     }
 }
+
