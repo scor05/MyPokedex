@@ -2,13 +2,15 @@ package com.uvg.mypokedex.ui.features.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uvg.mypokedex.ui.components.PokemonCard
-import com.uvg.mypokedex.ui.components.UnstablePokemonList
-import kotlin.random.Random
+
 
 
 @Composable
@@ -17,17 +19,33 @@ fun HomeScreen(
     viewModel: HomeViewModel = HomeViewModel()
 ) {
     val pokemonList = viewModel.getPokemonList()
-    // Remember en la lista para que sea inmutable
-    val pokemonNames = remember (pokemonList) { pokemonList.map { it.name } }
+    val searchQuery = rememberSaveable() { mutableStateOf("") }
+
+    val filteredPokemonList = if (searchQuery.value.isEmpty()) {
+        pokemonList
+    } else {
+        pokemonList.filter { it.name.contains(searchQuery.value, ignoreCase = true) }
+    }
+
+    Column (modifier = modifier.fillMaxSize()){
+        TextField(
+            value = searchQuery.value,
+            onValueChange = { searchQuery.value = it },
+            label = { Text("Search Pokemon") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
+    }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(pokemonList) { pokemon ->
+        items(filteredPokemonList) { pokemon ->
             PokemonCard(pokemon)
         }
     }
