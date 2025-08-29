@@ -27,10 +27,6 @@ fun HomeScreen(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxSize()
     ) {
-        // Sacar el UnstablePokemonList del bucle
-        item {
-            UnstablePokemonList(pokemonNames)
-        }
         items(pokemonList) { pokemon ->
             PokemonCard(pokemon)
         }
