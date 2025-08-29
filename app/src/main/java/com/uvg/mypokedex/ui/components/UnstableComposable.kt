@@ -8,6 +8,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import kotlin.random.Random
 
 // PREGUNTAS POR HACERSE:
@@ -19,7 +20,7 @@ import kotlin.random.Random
 fun UnstablePokemonList(pokemons: List<String>) {
     // remember hace que se guarde en caché el color y no se calcule por cada recomposición
     val colorRand = remember { Color(Random.nextInt(0, 0xFFFFFF)) }
-    val randomColor = String.format("#%06x", colorRand)
+    val randomColor = String.format("#%06x", colorRand.toArgb() and 0xFFFFFF)
 
     // SideEffect hace que se ejecute código después de haber dibujado toda la UI, lo cual elimina
     // todos los prints que se hacen por cada composición y solo muestra uno.
