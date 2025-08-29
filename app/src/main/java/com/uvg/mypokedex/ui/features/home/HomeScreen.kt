@@ -27,8 +27,9 @@ fun HomeScreen(
         pokemonList.filter { it.name.contains(searchQuery.value, ignoreCase = true) }
     }
 
-    Column (modifier = modifier.fillMaxSize()){
+    Column(modifier = modifier.fillMaxSize()){
         TextField(
+            singleLine = true,
             value = searchQuery.value,
             onValueChange = { searchQuery.value = it },
             label = { Text("Buscar Pokemon") },
@@ -36,17 +37,19 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .padding(8.dp)
         )
-    }
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(filteredPokemonList) { pokemon ->
-            PokemonCard(pokemon)
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxSize()
+
+
+        ) {
+            items(filteredPokemonList) { pokemon ->
+                PokemonCard(pokemon)
+            }
         }
     }
 }

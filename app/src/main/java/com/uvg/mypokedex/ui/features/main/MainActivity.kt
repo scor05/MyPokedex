@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.uvg.mypokedex.ui.detail.TopBar
 import com.uvg.mypokedex.ui.features.home.HomeScreen
 import com.uvg.mypokedex.ui.theme.MyPokedexTheme
 
@@ -16,7 +17,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyPokedexTheme {
-                Scaffold { innerPadding ->
+                Scaffold(
+                    topBar = { TopBar("MI POKEDEX") } // 👈 aquí va el topBar
+                ) { innerPadding ->
                     HomeScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
