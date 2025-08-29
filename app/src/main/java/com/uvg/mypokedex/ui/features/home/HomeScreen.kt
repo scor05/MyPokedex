@@ -31,7 +31,7 @@ fun HomeScreen(
         TextField(
             value = searchQuery.value,
             onValueChange = { searchQuery.value = it },
-            label = { Text("Search Pokemon") },
+            label = { Text("Buscar Pokemon") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
