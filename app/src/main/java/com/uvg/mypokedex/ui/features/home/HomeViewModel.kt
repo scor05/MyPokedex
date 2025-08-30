@@ -1,5 +1,6 @@
 package com.uvg.mypokedex.ui.features.home
 
+import androidx.compose.runtime.mutableStateListOf
 import com.uvg.mypokedex.data.Pokemon
 import com.uvg.mypokedex.data.Stat
 
@@ -158,4 +159,19 @@ class HomeViewModel{
             )
         )
     }
+
+private val _favoritePokemons = mutableStateListOf<String>()
+val favoritePokemons: List<String> get() = _favoritePokemons
+
+fun toggleFavorite(pokemonName: String) {
+    if (_favoritePokemons.contains(pokemonName)) {
+        _favoritePokemons.remove(pokemonName)
+    } else {
+        _favoritePokemons.add(pokemonName)
+    }
+}
+
+fun isFavorite(pokemonName: String): Boolean {
+    return _favoritePokemons.contains(pokemonName)
+}
 }

@@ -1,5 +1,6 @@
 package com.uvg.mypokedex.ui.components
 
+    import android.graphics.drawable.Icon
     import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -46,6 +47,7 @@ fun PokemonCard(pokemon: Pokemon) {
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+
 
             // Nombre
             Text(
