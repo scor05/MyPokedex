@@ -6,12 +6,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uvg.mypokedex.ui.components.PokemonCard
+import com.uvg.mypokedex.ui.components.PokemonOrderButton
 
-
+fun toggleOrder(currentState: Boolean, pokemonNameList: List<String>): Boolean{
+    return if (currentState){
+        pokemonNameList.sortedBy { it }
+        false
+    } else {
+        pokemonNameList.sortedByDescending { it }
+        true
+    }
+}
 
 @Composable
 fun HomeScreen(
@@ -19,33 +32,56 @@ fun HomeScreen(
     viewModel: HomeViewModel = HomeViewModel()
 ) {
     val pokemonList = viewModel.getPokemonList()
-    val searchQuery = rememberSaveable() { mutableStateOf("") }
 
-    val filteredPokemonList = if (searchQuery.value.isEmpty()) {
-        pokemonList
-    } else {
-        pokemonList.filter { it.name.contains(searchQuery.value, ignoreCase = true) }
+    val pokemonNames = pokemonList.map{it.name}
+
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var orderState by remember { mutableStateOf(false) }
+
+    var filteredPokemonList = pokemonList.filter {
+        it.name.contains(searchQuery, ignoreCase = true)
     }
 
-    Column(modifier = modifier.fillMaxSize()){
-        TextField(
-            singleLine = true,
-            value = searchQuery.value,
-            onValueChange = { searchQuery.value = it },
-            label = { Text("Buscar Pokemon") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
+    filteredPokemonList = if (orderState) {
+        filteredPokemonList.sortedBy { it.name }
+    } else {
+        filteredPokemonList.sortedByDescending { it.name }
+    }
 
+    if (orderState){
+        filteredPokemonList.sortedBy { it.name }
+    } else {
+        filteredPokemonList.sortedByDescending { it.name }
+    }
+
+    Column(
+        modifier = modifier.fillMaxSize().padding(12.dp)
+    ) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            TextField(
+                singleLine = true,
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                label = { Text("Buscar Pokemon") },
+                modifier = Modifier
+                    .padding(4.dp)
+            )
+
+            PokemonOrderButton(
+                currentState = orderState,
+                onClick = { orderState = toggleOrder(orderState, pokemonNames) }
+            )
+        }
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(1.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxSize()
-
-
         ) {
             items(filteredPokemonList) { pokemon ->
                 PokemonCard(pokemon)
