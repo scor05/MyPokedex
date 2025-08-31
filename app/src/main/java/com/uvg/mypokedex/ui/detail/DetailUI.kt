@@ -17,10 +17,8 @@ fun DetailUI(
     isFavorite: Boolean,
     onToggleFavorite: () -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(12.dp)) {
         Text(text = pokemonName, style = MaterialTheme.typography.headlineLarge)
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         FavoriteButton(
             isFavorite = isFavorite,
@@ -37,7 +35,7 @@ fun TopBar(pokemonName: String, showFavorite: Boolean = true, isFavorite: Boolea
         actions = {
             if (showFavorite) {
                 FavoriteButton(
-                   isFavorite = isFavorite,
+                    isFavorite = isFavorite,
                     onToggleFavorite = onToggleFavorite
                 )
             }
