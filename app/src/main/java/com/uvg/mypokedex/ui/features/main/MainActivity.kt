@@ -28,15 +28,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyPokedexTheme {
+                var isFavoriteState by remember { mutableStateOf(false) }
                 val homeViewModel = HomeViewModel()
                 Scaffold(
                     modifier = Modifier.fillMaxWidth(),
                     topBar = {
                         TopBar(
                             pokemonName = "MI POKEDEX",
-                            showFavorite = false,
-                            isFavorite = false,
-                            onToggleFavorite = {}
+                            showFavorite = true,
+                            isFavorite = isFavoriteState,
+                            onToggleFavorite = {isFavoriteState = !isFavoriteState}
                         )
                     }
                 ) { innerPadding ->
