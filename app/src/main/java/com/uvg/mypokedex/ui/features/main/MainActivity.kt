@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     HomeScreen(modifier = Modifier.padding(vertical = 50.dp, horizontal = 8.dp),
-                        viewModel = homeViewModel )
+                        viewModel = homeViewModel, isFavorite = isFavoriteState )
                 }
             }
         }

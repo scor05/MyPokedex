@@ -31,7 +31,11 @@ fun DetailUI(
 fun TopBar(pokemonName: String, showFavorite: Boolean = true, isFavorite: Boolean, onToggleFavorite: () -> Unit) {
     CenterAlignedTopAppBar(
         title = { Text(pokemonName) },
-        navigationIcon = { IconButton(onClick = { }) { Text("<") } },
+        navigationIcon = {
+            IconButton(onClick = { }) {
+                Text("<")
+            }
+        },
         actions = {
             if (showFavorite) {
                 FavoriteButton(

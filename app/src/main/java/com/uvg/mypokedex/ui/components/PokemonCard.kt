@@ -49,7 +49,7 @@ fun PokemonCard(pokemon: Pokemon, isFavorite: Boolean, onToggleFavorite: () -> U
             modifier = Modifier.size(120.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
 
             // Nombre
@@ -64,13 +64,11 @@ fun PokemonCard(pokemon: Pokemon, isFavorite: Boolean, onToggleFavorite: () -> U
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
         ){
-            Text(text = pokemon.name, style = MaterialTheme.typography.bodyLarge)
-
             FavoriteButton(isFavorite = isFavorite,
-                onToggleFavorite = onToggleFavorite)
+                onToggleFavorite = { onToggleFavorite() })
         }
     }
 }

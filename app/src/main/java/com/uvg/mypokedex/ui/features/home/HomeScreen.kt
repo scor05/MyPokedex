@@ -1,7 +1,6 @@
 package com.uvg.mypokedex.ui.features.home
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -30,7 +29,8 @@ fun toggleOrder(currentState: Boolean, pokemonNameList: List<String>): Boolean{
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = HomeViewModel()
+    viewModel: HomeViewModel = HomeViewModel(),
+    isFavorite: Boolean
 ) {
     val pokemonList = viewModel.getPokemonList()
 
@@ -43,17 +43,16 @@ fun HomeScreen(
         it.name.contains(searchQuery, ignoreCase = true)
     }
 
+    if (isFavorite){
+        filteredPokemonList = filteredPokemonList.filter {viewModel.isFavorite(it.name)}
+    }
+
     filteredPokemonList = if (orderState) {
         filteredPokemonList.sortedBy { it.name }
     } else {
         filteredPokemonList.sortedByDescending { it.name }
     }
 
-    if (orderState){
-        filteredPokemonList.sortedBy { it.name }
-    } else {
-        filteredPokemonList.sortedByDescending { it.name }
-    }
 
     Column(
         modifier = modifier.fillMaxSize().padding(12.dp)
@@ -77,22 +76,25 @@ fun HomeScreen(
                 onClick = { orderState = toggleOrder(orderState, pokemonNames) }
             )
         }
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-
-            items(filteredPokemonList) { pokemon ->
-                PokemonCard(
-                    pokemon = pokemon,
-                    isFavorite = viewModel.isFavorite(pokemon.name),
-                    onToggleFavorite = { viewModel.toggleFavorite(pokemon.name) }
-                )
+        if (filteredPokemonList.isEmpty()){
+            Text("No se encontraron Pokémon con los criterios de búsqueda.")
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(filteredPokemonList) { pokemon ->
+                    PokemonCard(
+                        pokemon = pokemon,
+                        isFavorite = viewModel.isFavorite(pokemon.name),
+                        onToggleFavorite = { viewModel.toggleFavorite(pokemon.name); }
+                    )
+                }
             }
-            }
+        }
         }
     }
 
