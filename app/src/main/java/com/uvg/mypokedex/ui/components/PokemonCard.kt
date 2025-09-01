@@ -1,9 +1,11 @@
 package com.uvg.mypokedex.ui.components
 
     import android.graphics.drawable.Icon
+    import androidx.compose.foundation.border
     import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+    import androidx.compose.foundation.layout.Row
+    import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,16 +25,17 @@ import coil.compose.AsyncImage
 import com.uvg.mypokedex.data.Pokemon
 
 @Composable
-fun PokemonCard(pokemon: Pokemon) {
-    val typeColor = Color.Gray // Puedes cambiar según tipo
+fun PokemonCard(pokemon: Pokemon, isFavorite: Boolean, onToggleFavorite: () -> Unit, modifier: Modifier = Modifier) {
+    val typeColor = Color.Gray
 
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .border(3.dp, Color.LightGray, shape = MaterialTheme.shapes.medium),
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        colors = CardDefaults.cardColors(containerColor = typeColor)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -56,6 +59,18 @@ fun PokemonCard(pokemon: Pokemon) {
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge
             )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+        ){
+            Text(text = pokemon.name, style = MaterialTheme.typography.bodyLarge)
+
+            FavoriteButton(isFavorite = isFavorite,
+                onToggleFavorite = onToggleFavorite)
         }
     }
 }

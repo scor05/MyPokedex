@@ -1,6 +1,7 @@
 package com.uvg.mypokedex.ui.features.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -78,14 +79,20 @@ fun HomeScreen(
         }
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(1.dp),
+            contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxSize()
         ) {
+
             items(filteredPokemonList) { pokemon ->
-                PokemonCard(pokemon)
+                PokemonCard(
+                    pokemon = pokemon,
+                    isFavorite = viewModel.isFavorite(pokemon.name),
+                    onToggleFavorite = { viewModel.toggleFavorite(pokemon.name) }
+                )
+            }
             }
         }
     }
-}
+

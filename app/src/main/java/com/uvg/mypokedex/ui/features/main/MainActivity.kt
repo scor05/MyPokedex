@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uvg.mypokedex.ui.components.PokemonOrderButton
 import com.uvg.mypokedex.ui.detail.DetailUI
 import com.uvg.mypokedex.ui.detail.TopBar
@@ -27,31 +28,32 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyPokedexTheme {
-                var isFavoriteState by remember { mutableStateOf(false) }
+                val homeViewModel = HomeViewModel()
                 Scaffold(
                     modifier = Modifier.fillMaxWidth(),
                     topBar = {
                         TopBar(
                             pokemonName = "MI POKEDEX",
-                            showFavorite = true, // Decide si mostrar el ícono de favorito
-                            isFavorite = isFavoriteState, // Pasa el estado actual
-                            onToggleFavorite = { isFavoriteState = !isFavoriteState } // Lógica para cambiar el estado
+                            showFavorite = false,
+                            isFavorite = false,
+                            onToggleFavorite = {}
                         )
                     }
                 ) { innerPadding ->
-                    HomeScreen(modifier = Modifier.padding(vertical = 50.dp, horizontal = 8.dp))
+                    HomeScreen(modifier = Modifier.padding(vertical = 50.dp, horizontal = 8.dp),
+                        viewModel = homeViewModel )
                 }
             }
         }
     }
 }
 
-@Composable
-fun AppNavigation(homeViewModel: HomeViewModel) {
-    // Muestra Pikachu como ejemplo
-    DetailUI(
-        pokemonName = "Pikachu",
-        isFavorite = homeViewModel.isFavorite("Pikachu"),
-        onToggleFavorite = { homeViewModel.toggleFavorite("Pikachu") }
-    )
-}
+//@Composable
+//fun AppNavigation(homeViewModel: HomeViewModel) {
+//    // Muestra Pikachu como ejemplo
+//    DetailUI(
+//        pokemonName = "Pikachu",
+//        isFavorite = homeViewModel.isFavorite("Pikachu"),
+//        onToggleFavorite = { homeViewModel.toggleFavorite("Pikachu") }
+//    )
+//}
