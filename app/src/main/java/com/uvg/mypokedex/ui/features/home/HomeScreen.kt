@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.uvg.mypokedex.ui.components.PokemonCard
 import com.uvg.mypokedex.ui.components.PokemonOrderButton
+import androidx.compose.ui.platform.LocalContext
 
 fun toggleOrder(currentState: Boolean, pokemonNameList: List<String>): Boolean{
     return if (currentState){
@@ -29,7 +30,7 @@ fun toggleOrder(currentState: Boolean, pokemonNameList: List<String>): Boolean{
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = HomeViewModel(),
+    viewModel: HomeViewModel,
     isFavorite: Boolean
 ) {
     val pokemonList = viewModel.getPokemonList()
