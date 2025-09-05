@@ -24,4 +24,4 @@ fun toggleFavorite(pokemonName: String) {
 fun isFavorite(pokemonName: String): Boolean {
     return _favoritePokemons.contains(pokemonName)
 }
-}
+
