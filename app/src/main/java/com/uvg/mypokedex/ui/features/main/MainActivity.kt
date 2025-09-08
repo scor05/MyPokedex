@@ -52,12 +52,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//@Composable
-//fun AppNavigation(homeViewModel: HomeViewModel) {
-//    // Muestra Pikachu como ejemplo
-//    DetailUI(
-//        pokemonName = "Pikachu",
-//        isFavorite = homeViewModel.isFavorite("Pikachu"),
-//        onToggleFavorite = { homeViewModel.toggleFavorite("Pikachu") }
-//    )
-//}
