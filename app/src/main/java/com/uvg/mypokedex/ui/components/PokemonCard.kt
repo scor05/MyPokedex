@@ -1,6 +1,5 @@
 package com.uvg.mypokedex.ui.components
 
-    import android.graphics.drawable.Icon
     import androidx.compose.foundation.border
     import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import coil.compose.AsyncImage
-import com.uvg.mypokedex.data.Pokemon
+    import com.uvg.mypokedex.data.Pokemon
 
 @Composable
 fun PokemonCard(pokemon: Pokemon, isFavorite: Boolean, onToggleFavorite: () -> Unit, modifier: Modifier = Modifier) {
