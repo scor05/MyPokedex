@@ -1,2 +1,110 @@
 package com.uvg.mypokedex.ui.search
 
+import android.text.Layout
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+
+
+enum class SortOption { Numero, Nombre }
+
+@Composable
+fun SearchToolsDialog(
+    onDismiss: () -> Unit
+) {
+
+    var expanded by remember { mutableStateOf(false) }
+    var selected by remember { mutableStateOf(SortOption.Numero) }
+    var ascending by remember { mutableStateOf(true) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Herramientas de búsqueda") },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+
+                Column {
+                    Text("Ordenar por")
+                    Box {
+                        OutlinedButton(onClick = { expanded = true }) {
+                            Text(
+                                when (selected) {
+                                    SortOption.Numero -> "Número"
+                                    SortOption.Nombre -> "Nombre"
+                                }
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Número") },
+                                onClick = {
+                                    selected = SortOption.Numero
+                                    expanded = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Nombre") },
+                                onClick = {
+                                    selected = SortOption.Nombre
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+
+                Column {
+                    Text("Orden")
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = ascending,
+                                onClick = { ascending = true }
+                            )
+                            Text("Ascendente")
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(
+                                selected = !ascending,
+                                onClick = { ascending = false }
+                            )
+                            Text("Descendente")
+                        }
+                    }
+                }
+
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("Cerrar") }
+        }
+    )
+}
