@@ -8,8 +8,5 @@ sealed class AppScreens(val route: String) {
     object DetailScreen : AppScreens("detail/{itemId}") {
         fun createRoute(itemId: String) = "detail/$itemId"
     }
-
     object SearchToolsDialog : AppScreens("search_tools_dialog")
-
-
-
+}
