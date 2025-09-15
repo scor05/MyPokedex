@@ -1,6 +1,7 @@
 package com.uvg.mypokedex.ui.features.home
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.uvg.mypokedex.data.Pokemon
@@ -16,6 +17,10 @@ class HomeViewModel(private val context: Context) {
     val pokemons: SnapshotStateList<Pokemon> get() = _pokemons
 
     private val _favoritePokemons = mutableStateListOf<String>()
+
+    fun getPokemon(name: String): Pokemon{
+        return pokemons.find { it.name == name }!!
+    }
 
     fun loadMorePokemon() {
         if (endReached) return

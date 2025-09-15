@@ -24,9 +24,8 @@ import coil.compose.AsyncImage
     import com.uvg.mypokedex.data.Pokemon
 
 @Composable
-fun PokemonCard(pokemon: Pokemon, isFavorite: Boolean, onToggleFavorite: () -> Unit, modifier: Modifier = Modifier) {
+fun PokemonCard(pokemon: Pokemon, isFavorite: Boolean, onToggleFavorite: () -> Unit, modifier: Modifier = Modifier, onItemClick: (Unit) -> Unit) {
     val typeColor = Color.Gray
-
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -34,7 +33,8 @@ fun PokemonCard(pokemon: Pokemon, isFavorite: Boolean, onToggleFavorite: () -> U
             .border(3.dp, Color.LightGray, shape = MaterialTheme.shapes.medium),
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        onClick = { onItemClick(Unit) }
     ) {
         Column(
             modifier = Modifier.padding(16.dp),

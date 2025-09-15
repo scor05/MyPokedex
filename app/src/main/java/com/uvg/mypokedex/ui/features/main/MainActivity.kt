@@ -17,6 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.internal.NavContext
+import com.uvg.mypokedex.navigation.AppNavigationHost
 import com.uvg.mypokedex.ui.components.PokemonOrderButton
 import com.uvg.mypokedex.ui.detail.DetailUI
 import com.uvg.mypokedex.ui.detail.TopBar
@@ -28,25 +31,20 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             val context: Context = LocalContext.current.applicationContext
+            val navController = rememberNavController()
+
             MyPokedexTheme {
                 var isFavoriteState by remember { mutableStateOf(false) }
                 val homeViewModel = HomeViewModel(context)
-                Scaffold(
-                    modifier = Modifier.fillMaxWidth(),
-                    topBar = {
-                        TopBar(
-                            pokemonName = "MI POKEDEX",
-                            showFavorite = true,
-                            isFavorite = isFavoriteState,
-                            onToggleFavorite = {isFavoriteState = !isFavoriteState}
-                        )
-                    }
-                ) { innerPadding ->
-                    HomeScreen(modifier = Modifier.padding(vertical = 50.dp, horizontal = 8.dp),
-                        viewModel = homeViewModel, isFavorite = isFavoriteState )
-                }
+
+                AppNavigationHost(
+                    navController = navController,
+                    homeViewModel = homeViewModel,
+                    favoriteToggled = isFavoriteState
+                )
             }
         }
     }

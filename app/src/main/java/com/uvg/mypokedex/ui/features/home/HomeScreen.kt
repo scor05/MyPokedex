@@ -25,6 +25,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.navigation.NavController
+import com.uvg.mypokedex.navigation.AppScreens
+import com.uvg.mypokedex.navigation.AppScreens.DetailScreen.createRoute
 
 fun toggleOrder(currentState: Boolean, pokemonNameList: List<String>): Boolean {
     return if (currentState) {
@@ -39,6 +42,7 @@ fun toggleOrder(currentState: Boolean, pokemonNameList: List<String>): Boolean {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel,
     isFavorite: Boolean
@@ -100,7 +104,10 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("MyPokedex") },
+                title = {
+                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally)
+                    { Text("MyPokedex") }
+                },
                 actions = {
 
                     IconButton(onClick = { showDialog = true }) {
@@ -117,7 +124,7 @@ fun HomeScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(12.dp)
+                .padding(8.dp)
         ) {
             // Barra de búsqueda
             Row(
@@ -160,7 +167,8 @@ fun HomeScreen(
                         PokemonCard(
                             pokemon = pokemon,
                             isFavorite = viewModel.isFavorite(pokemon.name),
-                            onToggleFavorite = { viewModel.toggleFavorite(pokemon.name) }
+                            onToggleFavorite = { viewModel.toggleFavorite(pokemon.name) },
+                            onItemClick = {navController.navigate(createRoute(pokemon.name))}
                         )
                     }
                 }
