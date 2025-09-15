@@ -28,6 +28,8 @@ import androidx.compose.runtime.*
 import androidx.navigation.NavController
 import com.uvg.mypokedex.navigation.AppScreens
 import com.uvg.mypokedex.navigation.AppScreens.DetailScreen.createRoute
+import com.uvg.mypokedex.ui.components.FavoriteButton
+import com.uvg.mypokedex.ui.detail.TopBar
 
 fun toggleOrder(currentState: Boolean, pokemonNameList: List<String>): Boolean {
     return if (currentState) {
@@ -103,20 +105,9 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally)
-                    { Text("MyPokedex") }
-                },
-                actions = {
-
-                    IconButton(onClick = { showDialog = true }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Herramientas de búsqueda"
-                        )
-                    }
-                }
+            TopBar(
+                navController = navController,
+                title = "MyPokedex"
             )
         }
     ) { innerPadding ->
@@ -124,31 +115,9 @@ fun HomeScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(8.dp)
+                .padding(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Barra de búsqueda
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                TextField(
-                    singleLine = true,
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    label = { Text("Buscar Pokémon") },
-                    modifier = Modifier.padding(4.dp)
-                )
-
-                PokemonOrderButton(
-                    currentState = orderState,
-                    onClick = { orderState = toggleOrder(orderState, pokemonNames) }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-
             if (filteredPokemonList.isEmpty()) {
                 Text("No se encontraron Pokémon con los criterios de búsqueda.")
             } else {
@@ -160,6 +129,23 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    item (span = {GridItemSpan(maxLineSpan)}) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ){
+                            TextField(
+                                singleLine = true,
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                label = { Text("Buscar Pokémon") },
+                                modifier = Modifier.padding(4.dp)
+                            )
+                        }
+                    }
                     items(
                         items = filteredPokemonList,
                         key = { it.id }

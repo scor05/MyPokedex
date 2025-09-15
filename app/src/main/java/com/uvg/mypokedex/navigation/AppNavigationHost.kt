@@ -55,10 +55,7 @@ fun AppNavigationHost(
                 topBar = {
                     TopBar(
                         navController = navController,
-                        title = "MyPokedex",
-                        showFavorite = true,
-                        isFavorite = isFav,
-                        onToggleFavorite = { homeViewModel.toggleFavorite(pokemonName) }
+                        title = "MyPokedex"
                     )
                 }
             ) { innerPadding ->
