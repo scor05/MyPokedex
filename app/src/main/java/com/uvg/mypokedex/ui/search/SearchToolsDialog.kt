@@ -28,12 +28,14 @@ enum class SortOption { Numero, Nombre }
 
 @Composable
 fun SearchToolsDialog(
+    selected: SortOption,
+    ascending: Boolean,
+    onSelectedChange: (SortOption) -> Unit,
+    onAscendingChange: (Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
 
     var expanded by remember { mutableStateOf(false) }
-    var selected by remember { mutableStateOf(SortOption.Numero) }
-    var ascending by remember { mutableStateOf(true) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -50,7 +52,7 @@ fun SearchToolsDialog(
                         OutlinedButton(onClick = { expanded = true }) {
                             Text(
                                 when (selected) {
-                                    SortOption.Numero -> "Número"
+                                    SortOption.Numero -> "Número de Pokedex"
                                     SortOption.Nombre -> "Nombre"
                                 }
                             )
@@ -62,14 +64,14 @@ fun SearchToolsDialog(
                             DropdownMenuItem(
                                 text = { Text("Número") },
                                 onClick = {
-                                    selected = SortOption.Numero
+                                    onSelectedChange(SortOption.Numero)
                                     expanded = false
                                 }
                             )
                             DropdownMenuItem(
                                 text = { Text("Nombre") },
                                 onClick = {
-                                    selected = SortOption.Nombre
+                                    onSelectedChange(SortOption.Nombre)
                                     expanded = false
                                 }
                             )
@@ -87,14 +89,14 @@ fun SearchToolsDialog(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(
                                 selected = ascending,
-                                onClick = { ascending = true }
+                                onClick = { onAscendingChange(true) }
                             )
                             Text("Ascendente")
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(
                                 selected = !ascending,
-                                onClick = { ascending = false }
+                                onClick = { onAscendingChange(false) }
                             )
                             Text("Descendente")
                         }

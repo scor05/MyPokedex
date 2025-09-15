@@ -50,12 +50,12 @@ fun AppNavigationHost(
             arguments = listOf(navArgument("pokemonName") { type = NavType.StringType })
         ) { backStackEntry ->
             val pokemonName = backStackEntry.arguments?.getString("pokemonName") ?: return@composable
-            val isFav = homeViewModel.isFavorite(pokemonName)
             Scaffold(
                 topBar = {
                     TopBar(
                         navController = navController,
-                        title = "MyPokedex"
+                        title = "MyPokedex",
+                        homeViewModel = homeViewModel
                     )
                 }
             ) { innerPadding ->

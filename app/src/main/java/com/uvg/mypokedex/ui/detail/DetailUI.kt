@@ -26,6 +26,7 @@ import com.uvg.mypokedex.data.*
 import com.uvg.mypokedex.ui.components.FavoriteButton
 import com.uvg.mypokedex.ui.features.home.HomeViewModel
 import com.uvg.mypokedex.ui.search.SearchToolsDialog
+import com.uvg.mypokedex.ui.search.SortOption
 import java.util.Locale
 
 
@@ -65,7 +66,7 @@ fun DetailUI(
 }
 
 @Composable
-fun TopBar(navController: NavController, title: String) {
+fun TopBar(navController: NavController, title: String, homeViewModel: HomeViewModel) {
 
     var showTools by remember { mutableStateOf(false) }
 
@@ -78,7 +79,13 @@ fun TopBar(navController: NavController, title: String) {
                 Text(text = title, textAlign = TextAlign.Center)
                 if (showTools) {
                     SearchToolsDialog(
-                        onDismiss = { showTools = false }
+                        selected = homeViewModel.sortOption,
+                        ascending = homeViewModel.ascending,
+                        onSelectedChange = { homeViewModel.setSortOptionCustom(it) },
+                        onAscendingChange = { homeViewModel.setAscendingCustom(it) },
+                        onDismiss = {
+                            showTools = false
+                        }
                     )
                 }
             },

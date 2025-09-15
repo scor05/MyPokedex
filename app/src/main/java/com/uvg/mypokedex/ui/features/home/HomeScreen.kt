@@ -30,6 +30,7 @@ import com.uvg.mypokedex.navigation.AppScreens
 import com.uvg.mypokedex.navigation.AppScreens.DetailScreen.createRoute
 import com.uvg.mypokedex.ui.components.FavoriteButton
 import com.uvg.mypokedex.ui.detail.TopBar
+import com.uvg.mypokedex.ui.search.SortOption
 
 fun toggleOrder(currentState: Boolean, pokemonNameList: List<String>): Boolean {
     return if (currentState) {
@@ -52,13 +53,12 @@ fun HomeScreen(
     var showDialog by remember { mutableStateOf(false) }
 
     val pokemonList = viewModel.pokemons
-    val pokemonNames = pokemonList.map { it.name }
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
-    var orderState by remember { mutableStateOf(false) }
 
     val gridState = rememberLazyGridState()
     var requesting by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(Unit) {
         if (viewModel.pokemons.isEmpty()) {
@@ -66,17 +66,25 @@ fun HomeScreen(
         }
     }
 
-
     var filteredPokemonList = pokemonList.filter {
         it.name.contains(searchQuery, ignoreCase = true)
     }
+
     if (isFavorite) {
         filteredPokemonList = filteredPokemonList.filter { viewModel.isFavorite(it.name) }
     }
-    filteredPokemonList = if (orderState) {
-        filteredPokemonList.sortedBy { it.name }
-    } else {
-        filteredPokemonList.sortedByDescending { it.name }
+
+    filteredPokemonList = when (viewModel.sortOption) {
+        SortOption.Numero -> if (viewModel.ascending) {
+            filteredPokemonList.sortedBy { it.id }
+        } else {
+            filteredPokemonList.sortedByDescending { it.id }
+        }
+        SortOption.Nombre -> if (viewModel.ascending) {
+            filteredPokemonList.sortedBy { it.name }
+        } else {
+            filteredPokemonList.sortedByDescending { it.name }
+        }
     }
 
 
@@ -107,7 +115,8 @@ fun HomeScreen(
         topBar = {
             TopBar(
                 navController = navController,
-                title = "MyPokedex"
+                title = "MyPokedex",
+                homeViewModel = viewModel
             )
         }
     ) { innerPadding ->
@@ -162,9 +171,12 @@ fun HomeScreen(
         }
     }
 
-    // ---- Diálogo de herramientas de búsqueda ----
     if (showDialog) {
         SearchToolsDialog(
+            selected = viewModel.sortOption,
+            ascending = viewModel.ascending,
+            onSelectedChange = { viewModel.setSortOptionCustom(it) },
+            onAscendingChange = { viewModel.setAscendingCustom(it) },
             onDismiss = { showDialog = false }
         )
     }

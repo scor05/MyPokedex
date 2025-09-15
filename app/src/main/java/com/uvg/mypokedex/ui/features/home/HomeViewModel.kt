@@ -2,10 +2,13 @@ package com.uvg.mypokedex.ui.features.home
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.uvg.mypokedex.data.Pokemon
-
+import com.uvg.mypokedex.ui.search.SortOption
 
 
 class HomeViewModel(private val context: Context) {
@@ -100,6 +103,20 @@ class HomeViewModel(private val context: Context) {
 
     fun isFavorite(pokemonName: String): Boolean {
         return _favoritePokemons.contains(pokemonName)
+    }
+
+    var sortOption by mutableStateOf(SortOption.Numero)
+        private set
+
+    var ascending by mutableStateOf(true)
+        private set
+
+    fun setSortOptionCustom(value: SortOption) {
+        sortOption = value
+    }
+
+    fun setAscendingCustom(value: Boolean) {
+        ascending = value
     }
 }
 
