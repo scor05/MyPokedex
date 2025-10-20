@@ -52,7 +52,7 @@ fun HomeScreen(
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
-    val pokemonList = viewModel.pokemons
+    val pokemonList = viewModel.getVisiblePokemons()
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
@@ -61,7 +61,7 @@ fun HomeScreen(
 
 
     LaunchedEffect(Unit) {
-        if (viewModel.pokemons.isEmpty()) {
+        if (pokemonList.isEmpty()) {
             viewModel.loadMorePokemon()
         }
     }
@@ -175,6 +175,8 @@ fun HomeScreen(
         SearchToolsDialog(
             selected = viewModel.sortOption,
             ascending = viewModel.ascending,
+            favorites = viewModel.favoritesToggle,
+            onFavoriteChange = { viewModel.setFavoritesOnly(it) },
             onSelectedChange = { viewModel.setSortOptionCustom(it) },
             onAscendingChange = { viewModel.setAscendingCustom(it) },
             onDismiss = { showDialog = false }

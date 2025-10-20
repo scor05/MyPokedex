@@ -16,10 +16,24 @@ class HomeViewModel(private val context: Context) {
     private var currentPage = 0
     private var endReached = false
 
+    var favoritesToggle by mutableStateOf(false)
+
     private val _pokemons = mutableStateListOf<Pokemon>()
     val pokemons: SnapshotStateList<Pokemon> get() = _pokemons
 
     private val _favoritePokemons = mutableStateListOf<String>()
+
+    fun setFavoritesOnly(value: Boolean) {
+        favoritesToggle = value
+    }
+
+    fun getVisiblePokemons(): List<Pokemon> {
+        return if (favoritesToggle) {
+            _pokemons.filter { isFavorite(it.name) }
+        } else {
+            _pokemons
+        }
+    }
 
     fun getPokemon(name: String): Pokemon{
         return pokemons.find { it.name == name }!!

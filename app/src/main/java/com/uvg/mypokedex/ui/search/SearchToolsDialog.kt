@@ -1,12 +1,15 @@
 package com.uvg.mypokedex.ui.search
 
 import android.text.Layout
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
@@ -21,7 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 enum class SortOption { Numero, Nombre }
@@ -30,8 +33,10 @@ enum class SortOption { Numero, Nombre }
 fun SearchToolsDialog(
     selected: SortOption,
     ascending: Boolean,
+    favorites: Boolean,
     onSelectedChange: (SortOption) -> Unit,
     onAscendingChange: (Boolean) -> Unit,
+    onFavoriteChange: (Boolean) -> Unit,
     onDismiss: () -> Unit
 ) {
 
@@ -102,6 +107,20 @@ fun SearchToolsDialog(
                         }
                     }
                 }
+
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text("Mostrar favoritos?")
+                        Checkbox(
+                            checked = favorites,
+                            onCheckedChange = onFavoriteChange
+                        )
+                    }
+                }
+
 
             }
         },

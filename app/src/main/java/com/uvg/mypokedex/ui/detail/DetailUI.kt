@@ -81,6 +81,8 @@ fun TopBar(navController: NavController, title: String, homeViewModel: HomeViewM
                     SearchToolsDialog(
                         selected = homeViewModel.sortOption,
                         ascending = homeViewModel.ascending,
+                        favorites = homeViewModel.favoritesToggle,
+                        onFavoriteChange = { homeViewModel.setFavoritesOnly(it) },
                         onSelectedChange = { homeViewModel.setSortOptionCustom(it) },
                         onAscendingChange = { homeViewModel.setAscendingCustom(it) },
                         onDismiss = {
