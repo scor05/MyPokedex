@@ -40,8 +40,7 @@ fun AppNavigationHost(
             HomeScreen(
                 navController = navController,
                 modifier = modifier,
-                viewModel = homeViewModel,
-                isFavorite = favoriteToggled
+                viewModel = homeViewModel
             )
         }
 

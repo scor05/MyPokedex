@@ -1,5 +1,8 @@
 package com.uvg.mypokedex.ui.features.home
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.uvg.mypokedex.data.Pokemon
@@ -10,14 +13,6 @@ import com.uvg.mypokedex.ui.search.SortOption
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
-data class PokemonListUiState(
-    val isLoading: Boolean = false,
-    val pokemons: List<Pokemon> = emptyList(),
-    val error: String? = null,
-    val page: Int = 1,
-    val endReached: Boolean = false
-)
 
 class HomeViewModel : ViewModel() {
 
@@ -42,12 +37,23 @@ class HomeViewModel : ViewModel() {
     var favoritesToggle: Boolean = false
         private set
 
+    var showDialog by mutableStateOf(false)
+        private set
+
+    fun toggleDialog(value: Boolean) {
+        showDialog = value
+    }
+
     fun setSortOptionCustom(value: SortOption) { sortOption = value }
     fun setAscendingCustom(value: Boolean) { ascending = value }
     fun setFavoritesOnly(value: Boolean) { favoritesToggle = value }
 
     init {
         loadMorePokemon()
+    }
+
+    fun getPokemon(name: String): Pokemon{
+        return _uiState.value.pokemons.find { it.name == name }!!
     }
 
     fun loadMorePokemon() {

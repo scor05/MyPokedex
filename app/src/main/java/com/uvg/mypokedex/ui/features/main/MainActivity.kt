@@ -32,13 +32,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val homeViewModel = HomeViewModel()
+
         setContent {
             val context: Context = LocalContext.current.applicationContext
             val navController = rememberNavController()
 
             MyPokedexTheme {
                 var isFavoriteState by remember { mutableStateOf(false) }
-                val homeViewModel = HomeViewModel(context)
+
 
                 AppNavigationHost(
                     navController = navController,
