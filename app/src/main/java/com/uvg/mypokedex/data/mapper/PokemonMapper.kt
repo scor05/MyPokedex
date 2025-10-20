@@ -4,7 +4,7 @@ import com.uvg.mypokedex.data.Pokemon
 import com.uvg.mypokedex.data.Stat
 import com.uvg.mypokedex.data.remote.dto.*
 
-fun PokemonDetailDTO.toDomain(): Pokemon {
+fun PokemonDetailDto.toDomain(): Pokemon {
     return Pokemon(
         id = id,
         name = name,
