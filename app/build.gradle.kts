@@ -61,6 +61,12 @@ dependencies {
     //Coil
     implementation(libs.coil.compose)
 
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.kotlinx.serialization)
+    implementation(libs.logging.interceptor)
+    implementation(libs.kotlinx.coroutines.android)
+
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.kotlinx.serialization.json)
