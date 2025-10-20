@@ -62,9 +62,14 @@ dependencies {
     implementation(libs.coil.compose)
 
 
-    implementation(libs.retrofit)
-    implementation(libs.converter.kotlinx.serialization)
-    implementation(libs.logging.interceptor)
+    implementation("com.squareup.retrofit2:retrofit:2.10.0")
+    implementation("com.squareup.retrofit2:converter-kotlinx-serialization:2.10.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3") 
+
+
+        implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.lifecycle.viewmodel.compose)
