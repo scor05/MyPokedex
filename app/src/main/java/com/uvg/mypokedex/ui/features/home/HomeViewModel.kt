@@ -1,144 +1,113 @@
 package com.uvg.mypokedex.ui.features.home
 
-import android.content.Context
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.uvg.mypokedex.data.Pokemon
+import com.uvg.mypokedex.data.remote.NetworkModule
+import com.uvg.mypokedex.data.remote.RemoteDataSource
+import com.uvg.mypokedex.data.repository.PokemonRepository
 import com.uvg.mypokedex.ui.search.SortOption
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
+/**
+ * Representa el estado actual de la lista de Pokémon en la UI.
+ */
+data class PokemonListUiState(
+    val isLoading: Boolean = false,
+    val pokemons: List<Pokemon> = emptyList(),
+    val error: String? = null,
+    val page: Int = 1,
+    val endReached: Boolean = false
+)
 
-class HomeViewModel(private val context: Context) {
+class HomeViewModel : ViewModel() {
 
-    private var currentPage = 0
-    private var endReached = false
+    // 🔗 Repositorio remoto (usa Retrofit y el RemoteDataSource)
+    private val repository = PokemonRepository(
+        remoteDataSource = RemoteDataSource(NetworkModule.api)
+    )
 
-    var favoritesToggle by mutableStateOf(false)
+    // 🔄 Estado interno mutable
+    private val _uiState = MutableStateFlow(PokemonListUiState())
+    val uiState: StateFlow<PokemonListUiState> = _uiState
 
-    private val _pokemons = mutableStateListOf<Pokemon>()
-    val pokemons: SnapshotStateList<Pokemon> get() = _pokemons
+    // ❤️ Favoritos en memoria
+    private val _favoritePokemons = mutableSetOf<String>()
+    fun toggleFavorite(name: String) {
+        if (_favoritePokemons.contains(name)) _favoritePokemons.remove(name)
+        else _favoritePokemons.add(name)
+    }
+    fun isFavorite(name: String) = _favoritePokemons.contains(name)
 
-    private val _favoritePokemons = mutableStateListOf<String>()
+    // ⚙️ Opciones de ordenamiento
+    var sortOption: SortOption = SortOption.Numero
+        private set
+    var ascending: Boolean = true
+        private set
+    var favoritesToggle: Boolean = false
+        private set
 
-    fun setFavoritesOnly(value: Boolean) {
-        favoritesToggle = value
+    fun setSortOptionCustom(value: SortOption) { sortOption = value }
+    fun setAscendingCustom(value: Boolean) { ascending = value }
+    fun setFavoritesOnly(value: Boolean) { favoritesToggle = value }
+
+    // 🚀 Cargar la primera página al iniciar
+    init {
+        loadMorePokemon()
     }
 
-    fun getVisiblePokemons(): List<Pokemon> {
-        return if (favoritesToggle) {
-            _pokemons.filter { isFavorite(it.name) }
-        } else {
-            _pokemons
-        }
-    }
-
-    fun getPokemon(name: String): Pokemon{
-        return pokemons.find { it.name == name }!!
-    }
-
+    /**
+     * Carga más Pokémon desde la API (paginación).
+     */
     fun loadMorePokemon() {
-        if (endReached) return
+        val currentState = _uiState.value
+        if (currentState.isLoading || currentState.endReached) return
 
-        val pageToLoad = currentPage + 1
-        val fileName = generateFileName(pageToLoad)
+        _uiState.value = currentState.copy(isLoading = true)
 
-        try {
-            val allAssets = context.assets.list("")?.toList() ?: emptyList()
-            android.util.Log.d("HVM", "Assets disponibles: $allAssets")
-            android.util.Log.d("HVM", "Intentando abrir: $fileName")
+        viewModelScope.launch {
+            val result = repository.getPokemonList(currentState.page)
 
-            val jsonString = context.assets.open(fileName)
-                .bufferedReader()
-                .use { it.readText() }
-
-            val jsonObject = org.json.JSONObject(jsonString)
-            val results = jsonObject.getJSONArray("items")
-
-            val newBatch = mutableListOf<com.uvg.mypokedex.data.Pokemon>()
-
-            for (i in 0 until results.length()) {
-                val p = results.getJSONObject(i)
-
-                val id = p.getInt("id")
-                val name = p.getString("name")
-                val height = p.getDouble("height").toFloat()
-                val weight = p.getDouble("weight").toFloat()
-
-                val typesArray = p.getJSONArray("type")
-                val types = MutableList(typesArray.length()) { j -> typesArray.getString(j) }
-
-                val statsArray = p.getJSONArray("stats")
-                val stats = mutableListOf<com.uvg.mypokedex.data.Stat>()
-
-                for (j in 0 until statsArray.length()) {
-                    val s = statsArray.getJSONObject(j)
-                    stats.add(
-                        com.uvg.mypokedex.data.Stat(
-                            name = s.getString("name"),
-                            value = s.getInt("value")
-                        )
+            result.fold(
+                onSuccess = { newList ->
+                    val updatedList = currentState.pokemons + newList
+                    _uiState.value = currentState.copy(
+                        isLoading = false,
+                        pokemons = updatedList,
+                        error = null,
+                        page = currentState.page + 1,
+                        endReached = newList.isEmpty()
+                    )
+                },
+                onFailure = { e ->
+                    _uiState.value = currentState.copy(
+                        isLoading = false,
+                        error = e.message ?: "Error desconocido"
                     )
                 }
-
-                newBatch.add(
-                    com.uvg.mypokedex.data.Pokemon(
-                        id = id,
-                        name = name,
-                        type = types,
-                        height = height,
-                        weight = weight,
-                        stats = stats
-                    )
-                )
-            }
-
-            _pokemons.addAll(newBatch)
-            currentPage = pageToLoad
-            android.util.Log.d("HVM", "Cargados ${newBatch.size} pokémon. Total: ${_pokemons.size}")
-
-        } catch (e: java.io.FileNotFoundException) {
-            endReached = true
-            android.util.Log.d("HVM", "No se encontró $fileName (fin de datos)")
-        } catch (e: Exception) {
-            android.util.Log.e("HVM", "Error cargando $fileName: ${e.message}", e)
+            )
         }
     }
 
-    fun toggleFavorite(pokemonName: String) {
-        if (_favoritePokemons.contains(pokemonName)) {
-            _favoritePokemons.remove(pokemonName)
-        } else {
-            _favoritePokemons.add(pokemonName)
+
+    fun retry() {
+        _uiState.value = _uiState.value.copy(error = null)
+        loadMorePokemon()
+    }
+
+
+    fun getVisiblePokemons(): List<Pokemon> {
+        var list = _uiState.value.pokemons
+
+        if (favoritesToggle) list = list.filter { isFavorite(it.name) }
+
+        list = when (sortOption) {
+            SortOption.Numero -> if (ascending) list.sortedBy { it.id } else list.sortedByDescending { it.id }
+            SortOption.Nombre -> if (ascending) list.sortedBy { it.name } else list.sortedByDescending { it.name }
         }
+
+        return list
     }
-
-    fun isFavorite(pokemonName: String): Boolean {
-        return _favoritePokemons.contains(pokemonName)
-    }
-
-    var sortOption by mutableStateOf(SortOption.Numero)
-        private set
-
-    var ascending by mutableStateOf(true)
-        private set
-
-    fun setSortOptionCustom(value: SortOption) {
-        sortOption = value
-    }
-
-    fun setAscendingCustom(value: Boolean) {
-        ascending = value
-    }
-}
-
-private fun generateFileName(page: Int): String {
-    val itemsPerPage = 10
-    val bottom = (page - 1) * itemsPerPage + 1
-    val top = page * itemsPerPage
-    val fb = String.format(java.util.Locale.US, "%03d", bottom)
-    val ft = String.format(java.util.Locale.US, "%03d", top)
-    return "pokemon_${fb}_${ft}.json"
 }
