@@ -1,6 +1,6 @@
 package com.uvg.mypokedex.data.remote
 
-import com.uvg.mypokedex.data.remote.dto.PokemonDetailDTO
+import com.uvg.mypokedex.data.remote.dto.PokemonDetailDto
 import com.uvg.mypokedex.data.remote.dto.PokemonListResponse
 import retrofit2.HttpException
 import java.io.IOException
@@ -23,7 +23,7 @@ class RemoteDataSource(private val api: PokemonApi) {
         }
     }
 
-    suspend fun fetchPokemonDetail(name: String): Result<PokemonDetailDTO> {
+    suspend fun fetchPokemonDetail(name: String): Result<PokemonDetailDto> {
         return try {
             val response = api.getPokemonDetail(name)
             Result.success(response)

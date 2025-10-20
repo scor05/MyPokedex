@@ -113,7 +113,6 @@ fun HomeScreen(
                             singleLine = true,
                             value = searchQuery,
                             onValueChange = {
-                                val it = null
                                 searchQuery = it
                             },
                             label = { Text("Buscar Pokémon") },

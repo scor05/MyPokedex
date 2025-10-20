@@ -11,9 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-/**
- * Representa el estado actual de la lista de Pokémon en la UI.
- */
 data class PokemonListUiState(
     val isLoading: Boolean = false,
     val pokemons: List<Pokemon> = emptyList(),
@@ -24,16 +21,13 @@ data class PokemonListUiState(
 
 class HomeViewModel : ViewModel() {
 
-    // 🔗 Repositorio remoto (usa Retrofit y el RemoteDataSource)
     private val repository = PokemonRepository(
         remoteDataSource = RemoteDataSource(NetworkModule.api)
     )
 
-    // 🔄 Estado interno mutable
     private val _uiState = MutableStateFlow(PokemonListUiState())
     val uiState: StateFlow<PokemonListUiState> = _uiState
 
-    // ❤️ Favoritos en memoria
     private val _favoritePokemons = mutableSetOf<String>()
     fun toggleFavorite(name: String) {
         if (_favoritePokemons.contains(name)) _favoritePokemons.remove(name)
@@ -41,7 +35,6 @@ class HomeViewModel : ViewModel() {
     }
     fun isFavorite(name: String) = _favoritePokemons.contains(name)
 
-    // ⚙️ Opciones de ordenamiento
     var sortOption: SortOption = SortOption.Numero
         private set
     var ascending: Boolean = true
@@ -53,14 +46,10 @@ class HomeViewModel : ViewModel() {
     fun setAscendingCustom(value: Boolean) { ascending = value }
     fun setFavoritesOnly(value: Boolean) { favoritesToggle = value }
 
-    // 🚀 Cargar la primera página al iniciar
     init {
         loadMorePokemon()
     }
 
-    /**
-     * Carga más Pokémon desde la API (paginación).
-     */
     fun loadMorePokemon() {
         val currentState = _uiState.value
         if (currentState.isLoading || currentState.endReached) return
@@ -91,12 +80,10 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-
     fun retry() {
         _uiState.value = _uiState.value.copy(error = null)
         loadMorePokemon()
     }
-
 
     fun getVisiblePokemons(): List<Pokemon> {
         var list = _uiState.value.pokemons
