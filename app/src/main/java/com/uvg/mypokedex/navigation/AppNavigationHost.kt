@@ -66,7 +66,6 @@ fun AppNavigationHost(
                 ) {
                     DetailUI(
                         pokemonName = pokemonName,
-                        homeViewModel = homeViewModel,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(10.dp)

@@ -1,133 +1,192 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.uvg.mypokedex.ui.detail
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.uvg.mypokedex.data.*
-import com.uvg.mypokedex.ui.components.FavoriteButton
-import com.uvg.mypokedex.ui.features.home.HomeViewModel
-import com.uvg.mypokedex.ui.search.SearchToolsDialog
-import com.uvg.mypokedex.ui.search.SortOption
 import java.util.Locale
-
-
-
 
 @Composable
 fun DetailUI(
     pokemonName: String,
-    homeViewModel: HomeViewModel,
-    modifier: Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PokemonDetailViewModel = viewModel()
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+    val uiState by viewModel.uiState.collectAsState()
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(pokemonName) {
+        viewModel.loadPokemon(pokemonName)
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState),
+        contentAlignment = Alignment.TopCenter
     ) {
-        Text(
-            text = pokemonName.replaceFirstChar { it.uppercaseChar() },
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            fontSize = 50.sp
-        )
+        when (uiState) {
+            is DetailUiState.Loading -> CircularProgressIndicator()
+            is DetailUiState.Error -> Text("Error al cargar los datos.")
+            is DetailUiState.Success -> {
+                val pokemon = (uiState as DetailUiState.Success).pokemon
 
-        Spacer(modifier = Modifier.height(3.dp))
-        AsyncImage(
-            model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${homeViewModel.getPokemon(pokemonName).id}.png",
-            contentDescription = "Imagen de ${pokemonName}",
-            modifier = Modifier.size(240.dp)
-        )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 20.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Nombre
+                        Text(
+                            text = pokemon.name.replaceFirstChar { it.uppercaseChar() },
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontSize = 40.sp
+                        )
 
-        Spacer(modifier = Modifier.height(4.dp))
+                        // Imagen
+                        AsyncImage(
+                            model = pokemon.sprites.front_default,
+                            contentDescription = "Imagen de ${pokemon.name}",
+                            modifier = Modifier.size(160.dp)
+                        )
 
-        for (stat in homeViewModel.getPokemon(pokemonName).stats) {
-            PokemonRow(stat)
+                        Divider(thickness = 1.dp)
+
+                        // Tipos
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "Tipos:",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            val tipos = pokemon.types.joinToString(", ") { slot ->
+                                slot.type.name.replaceFirstChar { it.uppercaseChar() }
+                            }
+                            Text(
+                                text = tipos,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
+                        Divider(thickness = 1.dp)
+
+                        // Estadísticas base
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = "Estadísticas base:",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+
+                            // Altura con decimal
+                            StatRowDecimal(
+                                name = "Altura",
+                                value = pokemon.height / 10.0,
+                                unit = "m",
+                                maxValue = 30.0
+                            )
+
+                            // Peso con decimal
+                            StatRowDecimal(
+                                name = "Peso",
+                                value = pokemon.weight / 10.0,
+                                unit = "kg",
+                                maxValue = 300.0
+                            )
+
+                            // Stats del API
+                            pokemon.stats.forEach { stat ->
+                                StatRow(
+                                    name = stat.stat.name,
+                                    value = stat.base_stat
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-fun TopBar(navController: NavController, title: String, homeViewModel: HomeViewModel) {
-
-    var showTools by remember { mutableStateOf(false) }
+fun StatRow(name: String, value: Int, unit: String? = null, maxValue: Int = 200) {
+    val formattedName = when (name.lowercase(Locale.ROOT)) {
+        "hp" -> "HP"
+        "attack" -> "Attack"
+        "defense" -> "Defense"
+        "special-attack" -> "Sp. Atk"
+        "special-defense" -> "Sp. Def"
+        "speed" -> "Speed"
+        else -> name.replaceFirstChar { it.uppercaseChar() }
+    }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CenterAlignedTopAppBar(
-            title = {
-                Text(text = title, textAlign = TextAlign.Center)
-                if (showTools) {
-                    SearchToolsDialog(
-                        selected = homeViewModel.sortOption,
-                        ascending = homeViewModel.ascending,
-                        onSelectedChange = { homeViewModel.setSortOptionCustom(it) },
-                        onAscendingChange = { homeViewModel.setAscendingCustom(it) },
-                        onDismiss = {
-                            showTools = false
-                        }
-                    )
-                }
-            },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-
-                    )
-                }
-            },
-            actions = {
-                IconButton(onClick = { showTools = true }) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "Herramientas"
-                    )
-                }
-            }
+        Text(
+            text = if (unit != null) "$formattedName: $value $unit" else "$formattedName: $value",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        LinearProgressIndicator(
+            progress = { (value / maxValue.toFloat()).coerceIn(0f, 1f) },
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .height(8.dp)
+                .padding(bottom = 4.dp)
         )
     }
 }
 
 @Composable
-fun PokemonMeasurements(height: Float, weight: Float){
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly){
-        Text(text = "Height: $height m")
-        Text(text = "Weight: $weight kg")
-    }
-}
-
-
-@Composable
-fun PokemonRow(stat: Stat){
-    Column(Modifier
-        .fillMaxWidth()
-        .padding(8.dp)){
-        Text(text = "${stat.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString() }}: ${stat.value}", fontSize = 18.sp)
+fun StatRowDecimal(name: String, value: Double, unit: String, maxValue: Double) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = String.format("%s: %.1f %s", name, value, unit),
+            style = MaterialTheme.typography.bodyMedium
+        )
         LinearProgressIndicator(
-            progress = { stat.value / 100f },
-            modifier = Modifier.fillMaxWidth(),
+            progress = { (value / maxValue).toFloat().coerceIn(0f, 1f) },
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .height(8.dp)
+                .padding(bottom = 4.dp)
         )
     }
 }

@@ -1,95 +1,60 @@
 package com.uvg.mypokedex.ui.features.home
 
-import android.content.Context
-import android.util.Log
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.uvg.mypokedex.data.Pokemon
+import com.uvg.mypokedex.data.remote.dto.PokemonResult
+import com.uvg.mypokedex.data.repository.PokemonRepository
 import com.uvg.mypokedex.ui.search.SortOption
+import kotlinx.coroutines.launch
 
+class HomeViewModel : ViewModel() {
 
-class HomeViewModel(private val context: Context) {
+    private val repository = PokemonRepository()
 
-    private var currentPage = 0
-    private var endReached = false
-
-    private val _pokemons = mutableStateListOf<Pokemon>()
-    val pokemons: SnapshotStateList<Pokemon> get() = _pokemons
+    private val allPokemons = mutableListOf<PokemonResult>()
+    private val _pokemons = mutableStateListOf<PokemonResult>()
+    val pokemons: SnapshotStateList<PokemonResult> get() = _pokemons
 
     private val _favoritePokemons = mutableStateListOf<String>()
 
-    fun getPokemon(name: String): Pokemon{
-        return pokemons.find { it.name == name }!!
-    }
+    var favoritesToggle by mutableStateOf(false)
+        private set
+
+    var sortOption by mutableStateOf(SortOption.Numero)
+        private set
+
+    var ascending by mutableStateOf(true)
+        private set
+
+    private var offset = 0
+    private val limit = 20
+    private var endReached = false
+    var loading by mutableStateOf(false)
+        private set
 
     fun loadMorePokemon() {
-        if (endReached) return
+        if (loading || endReached) return
+        loading = true
 
-        val pageToLoad = currentPage + 1
-        val fileName = generateFileName(pageToLoad)
-
-        try {
-            val allAssets = context.assets.list("")?.toList() ?: emptyList()
-            android.util.Log.d("HVM", "Assets disponibles: $allAssets")
-            android.util.Log.d("HVM", "Intentando abrir: $fileName")
-
-            val jsonString = context.assets.open(fileName)
-                .bufferedReader()
-                .use { it.readText() }
-
-            val jsonObject = org.json.JSONObject(jsonString)
-            val results = jsonObject.getJSONArray("items")
-
-            val newBatch = mutableListOf<com.uvg.mypokedex.data.Pokemon>()
-
-            for (i in 0 until results.length()) {
-                val p = results.getJSONObject(i)
-
-                val id = p.getInt("id")
-                val name = p.getString("name")
-                val height = p.getDouble("height").toFloat()
-                val weight = p.getDouble("weight").toFloat()
-
-                val typesArray = p.getJSONArray("type")
-                val types = MutableList(typesArray.length()) { j -> typesArray.getString(j) }
-
-                val statsArray = p.getJSONArray("stats")
-                val stats = mutableListOf<com.uvg.mypokedex.data.Stat>()
-
-                for (j in 0 until statsArray.length()) {
-                    val s = statsArray.getJSONObject(j)
-                    stats.add(
-                        com.uvg.mypokedex.data.Stat(
-                            name = s.getString("name"),
-                            value = s.getInt("value")
-                        )
-                    )
+        viewModelScope.launch {
+            val result = repository.getPokemonList(limit, offset)
+            result.onSuccess { response ->
+                if (response.results.isEmpty()) {
+                    endReached = true
+                } else {
+                    allPokemons.addAll(response.results)
+                    offset += limit
+                    applyFilters()
                 }
-
-                newBatch.add(
-                    com.uvg.mypokedex.data.Pokemon(
-                        id = id,
-                        name = name,
-                        type = types,
-                        height = height,
-                        weight = weight,
-                        stats = stats
-                    )
-                )
+            }.onFailure {
+                endReached = true
             }
-
-            _pokemons.addAll(newBatch)
-            currentPage = pageToLoad
-            android.util.Log.d("HVM", "Cargados ${newBatch.size} pokémon. Total: ${_pokemons.size}")
-
-        } catch (e: java.io.FileNotFoundException) {
-            endReached = true
-            android.util.Log.d("HVM", "No se encontró $fileName (fin de datos)")
-        } catch (e: Exception) {
-            android.util.Log.e("HVM", "Error cargando $fileName: ${e.message}", e)
+            loading = false
         }
     }
 
@@ -99,32 +64,53 @@ class HomeViewModel(private val context: Context) {
         } else {
             _favoritePokemons.add(pokemonName)
         }
+        applyFilters()
     }
 
     fun isFavorite(pokemonName: String): Boolean {
         return _favoritePokemons.contains(pokemonName)
     }
 
-    var sortOption by mutableStateOf(SortOption.Numero)
-        private set
-
-    var ascending by mutableStateOf(true)
-        private set
-
     fun setSortOptionCustom(value: SortOption) {
         sortOption = value
+        applyFilters()
     }
 
     fun setAscendingCustom(value: Boolean) {
         ascending = value
+        applyFilters()
     }
-}
 
-private fun generateFileName(page: Int): String {
-    val itemsPerPage = 10
-    val bottom = (page - 1) * itemsPerPage + 1
-    val top = page * itemsPerPage
-    val fb = String.format(java.util.Locale.US, "%03d", bottom)
-    val ft = String.format(java.util.Locale.US, "%03d", top)
-    return "pokemon_${fb}_${ft}.json"
+    fun setFavoritesOnly(value: Boolean) {
+        favoritesToggle = value
+        applyFilters()
+    }
+
+    private fun applyFilters() {
+        var list = allPokemons.toList()
+
+        if (favoritesToggle) {
+            list = list.filter { _favoritePokemons.contains(it.name) }
+        }
+
+        list = when (sortOption) {
+            SortOption.Numero -> {
+                if (ascending) list.sortedBy { extractIdFromUrl(it.url).toInt() }
+                else list.sortedByDescending { extractIdFromUrl(it.url).toInt() }
+            }
+            SortOption.Nombre -> {
+                if (ascending) list.sortedBy { it.name }
+                else list.sortedByDescending { it.name }
+            }
+        }
+
+        list = list.sortedByDescending { _favoritePokemons.contains(it.name) }
+
+        _pokemons.clear()
+        _pokemons.addAll(list)
+    }
+
+    private fun extractIdFromUrl(url: String): String {
+        return url.trimEnd('/').split("/").last()
+    }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role.Companion.Checkbox
 import androidx.compose.ui.unit.dp
 
 
@@ -32,7 +34,9 @@ fun SearchToolsDialog(
     ascending: Boolean,
     onSelectedChange: (SortOption) -> Unit,
     onAscendingChange: (Boolean) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    favorites: Boolean,
+    onFavoriteChange: (Boolean) -> Unit
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -80,6 +84,7 @@ fun SearchToolsDialog(
                 }
 
 
+
                 Column {
                     Text("Orden")
                     Row(
@@ -102,7 +107,18 @@ fun SearchToolsDialog(
                         }
                     }
                 }
-
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text("Mostrar favoritos?")
+                        Checkbox(
+                            checked = favorites,
+                            onCheckedChange = onFavoriteChange
+                        )
+                    }
+                }
             }
         },
         confirmButton = {

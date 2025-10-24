@@ -2,45 +2,22 @@ package com.uvg.mypokedex.ui.features.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.uvg.mypokedex.navigation.AppScreens.DetailScreen.createRoute
 import com.uvg.mypokedex.ui.components.PokemonCard
-import com.uvg.mypokedex.ui.components.PokemonOrderButton
+import com.uvg.mypokedex.ui.detail.TopBar
 import com.uvg.mypokedex.ui.search.SearchToolsDialog
+import com.uvg.mypokedex.ui.search.SortOption
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.navigation.NavController
-import com.uvg.mypokedex.navigation.AppScreens
-import com.uvg.mypokedex.navigation.AppScreens.DetailScreen.createRoute
-import com.uvg.mypokedex.ui.components.FavoriteButton
-import com.uvg.mypokedex.ui.detail.TopBar
-import com.uvg.mypokedex.ui.search.SortOption
-
-fun toggleOrder(currentState: Boolean, pokemonNameList: List<String>): Boolean {
-    return if (currentState) {
-        pokemonNameList.sortedBy { it }
-        false
-    } else {
-        pokemonNameList.sortedByDescending { it }
-        true
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,14 +28,11 @@ fun HomeScreen(
     isFavorite: Boolean
 ) {
     var showDialog by remember { mutableStateOf(false) }
-
-    val pokemonList = viewModel.pokemons
-
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
+    val pokemonList = viewModel.pokemons
     val gridState = rememberLazyGridState()
     var requesting by remember { mutableStateOf(false) }
-
 
     LaunchedEffect(Unit) {
         if (viewModel.pokemons.isEmpty()) {
@@ -76,9 +50,9 @@ fun HomeScreen(
 
     filteredPokemonList = when (viewModel.sortOption) {
         SortOption.Numero -> if (viewModel.ascending) {
-            filteredPokemonList.sortedBy { it.id }
+            filteredPokemonList.sortedBy { extractIdFromUrl(it.url).toInt() }
         } else {
-            filteredPokemonList.sortedByDescending { it.id }
+            filteredPokemonList.sortedByDescending { extractIdFromUrl(it.url).toInt() }
         }
         SortOption.Nombre -> if (viewModel.ascending) {
             filteredPokemonList.sortedBy { it.name }
@@ -86,7 +60,6 @@ fun HomeScreen(
             filteredPokemonList.sortedByDescending { it.name }
         }
     }
-
 
     LaunchedEffect(gridState, filteredPokemonList.size) {
         snapshotFlow {
@@ -138,14 +111,14 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    item (span = {GridItemSpan(maxLineSpan)}) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(4.dp),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
-                        ){
+                        ) {
                             TextField(
                                 singleLine = true,
                                 value = searchQuery,
@@ -157,13 +130,14 @@ fun HomeScreen(
                     }
                     items(
                         items = filteredPokemonList,
-                        key = { it.id }
+                        key = { extractIdFromUrl(it.url) }
                     ) { pokemon ->
+                        val id = extractIdFromUrl(pokemon.url)
                         PokemonCard(
                             pokemon = pokemon,
                             isFavorite = viewModel.isFavorite(pokemon.name),
                             onToggleFavorite = { viewModel.toggleFavorite(pokemon.name) },
-                            onItemClick = {navController.navigate(createRoute(pokemon.name))}
+                            onItemClick = { navController.navigate(createRoute(pokemon.name)) }
                         )
                     }
                 }
@@ -173,6 +147,8 @@ fun HomeScreen(
 
     if (showDialog) {
         SearchToolsDialog(
+            favorites = viewModel.favoritesToggle,
+            onFavoriteChange = { viewModel.setFavoritesOnly(it) },
             selected = viewModel.sortOption,
             ascending = viewModel.ascending,
             onSelectedChange = { viewModel.setSortOptionCustom(it) },
@@ -180,4 +156,8 @@ fun HomeScreen(
             onDismiss = { showDialog = false }
         )
     }
+}
+
+fun extractIdFromUrl(url: String): String {
+    return url.trimEnd('/').split("/").last()
 }
