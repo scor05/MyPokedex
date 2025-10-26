@@ -1,20 +1,21 @@
 package com.uvg.mypokedex.ui.features.home
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.uvg.mypokedex.data.remote.dto.PokemonResult
 import com.uvg.mypokedex.data.repository.PokemonRepository
 import com.uvg.mypokedex.ui.search.SortOption
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = PokemonRepository()
+    private val repository = PokemonRepository.create(application)
 
     private val allPokemons = mutableListOf<PokemonResult>()
     private val _pokemons = mutableStateListOf<PokemonResult>()

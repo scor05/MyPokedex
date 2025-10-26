@@ -21,10 +21,9 @@ fun PokemonCard(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit
 ) {
-
     val id = extractIdFromUrl(pokemon.url)
-
-    val imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png"
+    val idFormatted = id.padStart(3, '0')
+    val imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png"
 
     Card(
         modifier = modifier
@@ -47,7 +46,7 @@ fun PokemonCard(
                 modifier = Modifier.size(120.dp)
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             Text(
                 text = pokemon.name.replaceFirstChar { it.uppercaseChar() },
@@ -55,6 +54,16 @@ fun PokemonCard(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge
             )
+
+            // Número de Pokédex
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "#$idFormatted",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
         }
 
         Row(
@@ -74,4 +83,3 @@ fun PokemonCard(
 fun extractIdFromUrl(url: String): String {
     return url.trimEnd('/').split("/").last()
 }
-
