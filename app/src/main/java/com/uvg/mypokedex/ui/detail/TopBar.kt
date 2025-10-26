@@ -1,5 +1,6 @@
 package com.uvg.mypokedex.ui.detail
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
@@ -22,11 +23,17 @@ fun TopBar(
     homeViewModel: HomeViewModel
 ) {
     var showTools by remember { mutableStateOf(false) }
+    val activity = LocalActivity.current
 
     CenterAlignedTopAppBar(
         title = { Text(text = title, textAlign = TextAlign.Center) },
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = {
+                val popped = navController.popBackStack()
+                if (!popped) {
+                    activity?.moveTaskToBack(true)
+                }
+            }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Atrás"
