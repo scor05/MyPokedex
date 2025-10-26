@@ -1,5 +1,6 @@
 package com.uvg.mypokedex.ui.pokedex
 
+import android.app.Application
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,21 +10,28 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.uvg.mypokedex.data.remote.dto.PokemonResult
 
 @Composable
-fun PokedexScreen(
-    pokedexViewModel: PokedexViewModel = viewModel()
-) {
-    val uiState by pokedexViewModel.uiState.collectAsState()
+fun PokedexScreen() {
+    val app = LocalContext.current.applicationContext as Application
+    val pokedexViewModel: PokedexViewModel = viewModel(
+        factory = ViewModelProvider.AndroidViewModelFactory.getInstance(app)
+    )
+
+    val uiState: PokedexUiState by pokedexViewModel
+        .uiState
+        .collectAsState(initial = PokedexUiState.Loading)
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -67,24 +75,37 @@ fun PokemonList(
 
 @Composable
 fun PokemonItem(pokemon: PokemonResult) {
+    val id = extractIdFromUrl(pokemon.url).toInt()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${extractIdFromUrl(pokemon.url)}.png"
+        val imageUrl =
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png"
+
         Image(
             painter = rememberAsyncImagePainter(imageUrl),
             contentDescription = pokemon.name,
             modifier = Modifier.size(80.dp),
             contentScale = ContentScale.Crop
         )
+
         Spacer(modifier = Modifier.width(16.dp))
-        Text(
-            text = pokemon.name.replaceFirstChar { it.uppercase() },
-            style = MaterialTheme.typography.titleMedium
-        )
+
+        Column {
+            Text(
+                text = "N.º ${id.toString().padStart(3, '0')}",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = pokemon.name.replaceFirstChar { it.uppercase() },
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
     }
 }
 
@@ -102,4 +123,3 @@ fun ErrorState(onRetry: () -> Unit) {
         }
     }
 }
-
