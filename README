@@ -1,1 +1,7 @@
-En este proyecto se busca crear una versión inicial visual de lo que sería una POKEDEX. Los objetivos son poder realizar una Pokedex poniendo en práctica los principios vistos en clase sobre Jetpack Compose.
+<h1>MyPokedex</h1>
+En este proyecto se busca crear una POKEDEX, poniendo en práctica los principios vistos en clase sobre Jetpack Compose.
+
+<h2>Funcionalidad de la aplicación</h2>
+<a href="https://prnt.sc/IsjmdGedtXHd">Error al cargar de la API sin internet</a>
+<a href="https://prnt.sc/RG7x8nSeXGnr">Pantalla de detalle al recuperar internet</a>
+<a href="https://prnt.sc/ec3q9R9cGqk4">Modificación del tipo de orden de la lista (en pantalla principal)</a>
