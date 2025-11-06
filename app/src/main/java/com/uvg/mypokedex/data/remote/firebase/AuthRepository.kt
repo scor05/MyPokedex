@@ -18,7 +18,7 @@ class AuthRepository(
     // Verificar si está autenticado
     fun isAuthenticated(): Boolean = authService.isAuthenticated()
 
-    // Login anónimo con alias (RECOMENDADO PARA COMPETENCIA)
+    // Login anónimo con alias
     suspend fun signInWithAlias(alias: String): Result<FirebaseUser> {
         if (alias.isBlank()) {
             return Result.failure(Exception("El alias no puede estar vacío"))

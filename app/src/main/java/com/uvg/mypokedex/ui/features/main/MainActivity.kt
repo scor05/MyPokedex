@@ -81,6 +81,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+//COMPOSABLE HECHO POR IA SOLAMENTE PARA HACER PRUEBA DE LA BASE DE DATOS DE FIREBASE
 @Composable
 fun TestAuthScreen() {
     val authViewModel: AuthViewModel = viewModel()

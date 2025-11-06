@@ -34,7 +34,7 @@ class AuthViewModel(
         }
     }
 
-    // Login con Alias (RECOMENDADO PARA COMPETENCIA - RÁPIDO)
+    // Login con Alias
     fun signInWithAlias(alias: String) {
         viewModelScope.launch {
             _formState.value = _formState.value.copy(isLoading = true, errorMessage = null)
@@ -139,6 +139,6 @@ class AuthViewModel(
         _formState.value = _formState.value.copy(errorMessage = null)
     }
 
-    // Verificar si está autenticado (útil para guards)
+    // Verificar si está autenticado
     fun isAuthenticated(): Boolean = authRepository.isAuthenticated()
 }
