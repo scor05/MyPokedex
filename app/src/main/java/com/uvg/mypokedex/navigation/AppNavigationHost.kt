@@ -17,6 +17,8 @@ import androidx.navigation.navArgument
 import com.uvg.mypokedex.ui.detail.DetailUI
 import com.uvg.mypokedex.ui.detail.TopBar
 import com.uvg.mypokedex.ui.detail.TopBarBackOnly
+import com.uvg.mypokedex.ui.features.auth.AuthScreen
+import com.uvg.mypokedex.ui.features.exchangepackage.ExchangeScreen
 import com.uvg.mypokedex.ui.features.home.HomeScreen
 import com.uvg.mypokedex.ui.features.home.HomeViewModel
 
@@ -66,11 +68,15 @@ fun AppNavigationHost(
             )
         }
 
-//        composable(AppScreens.Exchange.route) {
-//            ExchangeScreen(
-//                onNavigateBack = { navController.navigateUp() }
-//            )
-//        }
+        composable("auth") {
+            AuthScreen(onAuthSuccess = { navController.navigate("home"){ popUpTo("auth"){ inclusive = true } } })
+        }
+
+        composable(AppScreens.Exchange.route) {
+            ExchangeScreen(
+                onNavigateBack = { navController.navigateUp() }
+            )
+        }
 
         // DETAIL
         composable(
