@@ -20,30 +20,15 @@ fun FavoriteButton(
     pokemonId: Int,
     pokemonName: String,
     imageUrl: String,
-    onAuthRequired: () -> Unit, // Mostrar modal de login
+    isFavorite: Boolean,
+    onToggleFavorite: () -> Unit,
+    onAuthRequired: () -> Unit,
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel = viewModel(),
-    favoritesViewModel: FavoritesViewModel = viewModel(),
-    isFavorite: Boolean,
-    onToggleFavorite: () -> Unit
+    favoritesViewModel: FavoritesViewModel = viewModel()
 ) {
-    IconButton(onClick = { onToggleFavorite() }) {
-        Icon(
-            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-            contentDescription = if (isFavorite) "Quitar de favoritos" else "Agregar a favoritos",
-            tint = if (isFavorite) Color.Red else Color.Gray
-        )
-    }
-    val scope = rememberCoroutineScope()
-    var isFavorite by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
-
-    // Verificar si es favorito al cargar
-    LaunchedEffect(pokemonId) {
-        if (authViewModel.isAuthenticated()) {
-            isFavorite = favoritesViewModel.isFavorite(pokemonId)
-        }
-    }
+    val scope = rememberCoroutineScope()
 
     IconButton(
         onClick = {
@@ -56,9 +41,11 @@ fun FavoriteButton(
             // Toggle favorito
             scope.launch {
                 isLoading = true
-                favoritesViewModel.toggleFavorite(pokemonId, pokemonName, imageUrl)
-                isFavorite = !isFavorite
-                isLoading = false
+                try {
+                    onToggleFavorite()
+                } finally {
+                    isLoading = false
+                }
             }
         },
         modifier = modifier
@@ -72,7 +59,7 @@ fun FavoriteButton(
             Icon(
                 imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                 contentDescription = if (isFavorite) "Quitar de favoritos" else "Agregar a favoritos",
-                tint = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                tint = if (isFavorite) Color.Red else Color.Gray
             )
         }
     }
