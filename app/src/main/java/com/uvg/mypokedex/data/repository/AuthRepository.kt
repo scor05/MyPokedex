@@ -1,4 +1,4 @@
-package com.uvg.mypokedex.data.remote.firebase
+package com.uvg.mypokedex.data.repository
 
 import com.google.firebase.auth.FirebaseUser
 import com.uvg.mypokedex.data.remote.dto.UserDto

@@ -2,7 +2,7 @@ package com.uvg.mypokedex.ui.features.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.uvg.mypokedex.data.remote.firebase.AuthRepository
+import com.uvg.mypokedex.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

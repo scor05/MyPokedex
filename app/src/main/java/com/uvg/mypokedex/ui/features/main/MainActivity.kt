@@ -29,60 +29,6 @@ import com.uvg.mypokedex.ui.components.AuthDialog
 import com.uvg.mypokedex.ui.features.auth.AuthUIState
 import com.uvg.mypokedex.ui.features.auth.AuthViewModel
 
-class MainActivity : ComponentActivity() {
-    private val TAG = "FirebaseTest"
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // Inicializar Firebase
-        FirebaseApp.initializeApp(this)
-
-        // Probar conexión con Firestore
-        val db = FirebaseFirestore.getInstance()
-        val testData = hashMapOf(
-            "mensaje" to "Hola Firebase!",
-            "timestamp" to com.google.firebase.Timestamp.now()
-        )
-
-        db.collection("prueba_sin_ui")
-            .add(testData)
-            .addOnSuccessListener { documentRef ->
-                Log.d(TAG, "✅ Documento creado con ID: ${documentRef.id}")
-            }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "❌ Error al escribir en Firestore", e)
-            }
-
-        setContent {
-            val navController = rememberNavController()
-            val homeViewModel: HomeViewModel = viewModel(
-                factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-            )
-            var isFavoriteState by remember { mutableStateOf(false) }
-
-            MyPokedexTheme {
-                AppNavigationHost(
-                    navController = navController,
-                    homeViewModel = homeViewModel,
-                    favoriteToggled = isFavoriteState
-                )
-
-                val activity = LocalActivity.current
-                BackHandler {
-                    val popped = navController.popBackStack()
-                    if (!popped) {
-                        // En la raíz: NO finish(); envía la tarea al background
-                        activity?.moveTaskToBack(true)
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-//COMPOSABLE HECHO POR IA SOLAMENTE PARA HACER PRUEBA DE LA BASE DE DATOS DE FIREBASE
 @Composable
 fun TestAuthScreen() {
     val authViewModel: AuthViewModel = viewModel()
@@ -119,5 +65,86 @@ fun TestAuthScreen() {
             onDismiss = { showDialog = false },
             onAuthSuccess = { showDialog = false }
         )
+    }
+}
+class MainActivity : ComponentActivity() {
+    private val TAG = "FirebaseTest"
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Inicializar Firebase
+        FirebaseApp.initializeApp(this)
+
+        setContent {
+            val authViewModel: AuthViewModel = viewModel()
+            val authState by authViewModel.uiState.collectAsState()
+
+            MyPokedexTheme {
+                // Mostrar pantalla de prueba de autenticación primero
+                when (authState) {
+                    is AuthUIState.NotAuthenticated -> {
+                        TestAuthScreen()
+                    }
+                    is AuthUIState.Authenticated -> {
+                        // Una vez autenticado, mostrar la app normal
+                        val navController = rememberNavController()
+                        val homeViewModel: HomeViewModel = viewModel(
+                            factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+                        )
+                        var isFavoriteState by remember { mutableStateOf(false) }
+
+                        AppNavigationHost(
+                            navController = navController,
+                            homeViewModel = homeViewModel,
+                            favoriteToggled = isFavoriteState
+                        )
+
+                        val activity = LocalActivity.current
+                        BackHandler {
+                            val popped = navController.popBackStack()
+                            if (!popped) {
+                                activity?.moveTaskToBack(true)
+                            }
+                        }
+                    }
+                    else -> {
+                        // Mostrar loading mientras se verifica el estado
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator()
+                            Text("Verificando autenticación...")
+                        }
+                    }
+                }
+            }
+        }
+//        setContent {
+//            val navController = rememberNavController()
+//            val homeViewModel: HomeViewModel = viewModel(
+//                factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+//            )
+//            var isFavoriteState by remember { mutableStateOf(false) }
+//
+//            MyPokedexTheme {
+//                AppNavigationHost(
+//                    navController = navController,
+//                    homeViewModel = homeViewModel,
+//                    favoriteToggled = isFavoriteState
+//                )
+//
+//                val activity = LocalActivity.current
+//                BackHandler {
+//                    val popped = navController.popBackStack()
+//                    if (!popped) {
+//                        // En la raíz: NO finish(); envía la tarea al background
+//                        activity?.moveTaskToBack(true)
+//                    }
+//                }
+//            }
+//        }
     }
 }

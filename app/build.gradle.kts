@@ -13,7 +13,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.uvg.mypokedex.lab12"
+        applicationId = "com.uvg.mypokedex"
         minSdk = 35
         targetSdk = 36
         versionCode = 1
@@ -73,9 +73,12 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.datastore:datastore-preferences:1.1.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+
+    // Room (usar misma versión para runtime/ktx/compiler)
+    val roomVersion = "2.8.3"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)

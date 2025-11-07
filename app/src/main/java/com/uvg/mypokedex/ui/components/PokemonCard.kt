@@ -74,7 +74,11 @@ fun PokemonCard(
         ) {
             FavoriteButton(
                 isFavorite = isFavorite,
-                onToggleFavorite = { onToggleFavorite() }
+                onToggleFavorite = { onToggleFavorite() },
+                pokemonId = pokemonId,
+                pokemonName = "Pikachu",
+                imageUrl = "https://...",
+                onAuthRequired = { showAuthDialog = true }
             )
         }
     }

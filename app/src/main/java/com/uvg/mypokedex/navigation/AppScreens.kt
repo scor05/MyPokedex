@@ -9,4 +9,6 @@ sealed class AppScreens(val route: String) {
         fun createRoute(pokemonName: String) = "detail/$pokemonName"
     }
     object SearchToolsDialog : AppScreens("search_tools_dialog")
+
+    data object Favorites : AppScreens("favorites")
 }
