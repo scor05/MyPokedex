@@ -13,6 +13,7 @@ lifecycleRuntimeKtx = "2.9.2"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
 androidxNavigationCompose = "2.9.4"
+materialIconsExtended = "<versión-de-compose>"
 roomCommonJvm = "2.8.3"
 roomKtx = "2.8.3"
 firebaseCommonKtx = "21.0.0"
@@ -21,6 +22,7 @@ roomRuntime = "2.8.3"
 ui = "1.9.4"
 
 [libraries]
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-room-ktx-v261 = { module = "androidx.room:room-ktx", version.ref = "roomKtxVersion" }
