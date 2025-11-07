@@ -2,6 +2,8 @@ package com.uvg.mypokedex.ui.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -55,7 +57,6 @@ fun PokemonCard(
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            // Número de Pokédex
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "#$idFormatted",
@@ -63,23 +64,19 @@ fun PokemonCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(2.dp))
-        }
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            FavoriteButton(
-                isFavorite = isFavorite,
-                onToggleFavorite = { onToggleFavorite() },
-                pokemonId = pokemonId,
-                pokemonName = "Pikachu",
-                imageUrl = "https://...",
-                onAuthRequired = { showAuthDialog = true }
-            )
+            // Botón de favorito integrado
+            IconButton(onClick = onToggleFavorite) {
+                Icon(
+                    imageVector = if (isFavorite)
+                        androidx.compose.material.icons.Icons.Filled.Favorite
+                    else
+                        androidx.compose.material.icons.Icons.Outlined.FavoriteBorder,
+                    contentDescription = if (isFavorite) "Quitar de favoritos" else "Agregar a favoritos",
+                    tint = if (isFavorite) Color.Red else Color.Gray
+                )
+            }
         }
     }
 }

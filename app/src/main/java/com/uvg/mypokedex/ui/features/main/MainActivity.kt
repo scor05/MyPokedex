@@ -9,67 +9,12 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.FirebaseApp
 import com.uvg.mypokedex.navigation.AppNavigationHost
 import com.uvg.mypokedex.ui.features.home.HomeViewModel
 import com.uvg.mypokedex.ui.theme.MyPokedexTheme
-import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.google.firebase.FirebaseApp
-import com.google.firebase.firestore.FirebaseFirestore
-import com.uvg.mypokedex.ui.components.AuthDialog
-import com.uvg.mypokedex.ui.features.auth.AuthUIState
-import com.uvg.mypokedex.ui.features.auth.AuthViewModel
 
-@Composable
-fun TestAuthScreen() {
-    val authViewModel: AuthViewModel = viewModel()
-    val uiState by authViewModel.uiState.collectAsState()
-    var showDialog by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        when (uiState) {
-            is AuthUIState.NotAuthenticated -> {
-                Text("No autenticado")
-                Button(onClick = { showDialog = true }) {
-                    Text("Iniciar Sesión")
-                }
-            }
-            is AuthUIState.Authenticated -> {
-                val user = (uiState as AuthUIState.Authenticated).user
-                Text("✅ Autenticado como: ${user.uid}")
-                Button(onClick = { authViewModel.signOut() }) {
-                    Text("Cerrar Sesión")
-                }
-            }
-            else -> CircularProgressIndicator()
-        }
-    }
-
-    if (showDialog) {
-        AuthDialog(
-            onDismiss = { showDialog = false },
-            onAuthSuccess = { showDialog = false }
-        )
-    }
-}
 class MainActivity : ComponentActivity() {
-    private val TAG = "FirebaseTest"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,74 +22,27 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
 
         setContent {
-            val authViewModel: AuthViewModel = viewModel()
-            val authState by authViewModel.uiState.collectAsState()
-
             MyPokedexTheme {
-                // Mostrar pantalla de prueba de autenticación primero
-                when (authState) {
-                    is AuthUIState.NotAuthenticated -> {
-                        TestAuthScreen()
-                    }
-                    is AuthUIState.Authenticated -> {
-                        // Una vez autenticado, mostrar la app normal
-                        val navController = rememberNavController()
-                        val homeViewModel: HomeViewModel = viewModel(
-                            factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-                        )
-                        var isFavoriteState by remember { mutableStateOf(false) }
+                val navController = rememberNavController()
+                val homeViewModel: HomeViewModel = viewModel(
+                    factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
+                )
+                var isFavoriteState by remember { mutableStateOf(false) }
 
-                        AppNavigationHost(
-                            navController = navController,
-                            homeViewModel = homeViewModel,
-                            favoriteToggled = isFavoriteState
-                        )
+                AppNavigationHost(
+                    navController = navController,
+                    homeViewModel = homeViewModel,
+                    favoriteToggled = isFavoriteState
+                )
 
-                        val activity = LocalActivity.current
-                        BackHandler {
-                            val popped = navController.popBackStack()
-                            if (!popped) {
-                                activity?.moveTaskToBack(true)
-                            }
-                        }
-                    }
-                    else -> {
-                        // Mostrar loading mientras se verifica el estado
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            CircularProgressIndicator()
-                            Text("Verificando autenticación...")
-                        }
+                val activity = LocalActivity.current
+                BackHandler {
+                    val popped = navController.popBackStack()
+                    if (!popped) {
+                        activity?.moveTaskToBack(true)
                     }
                 }
             }
         }
-//        setContent {
-//            val navController = rememberNavController()
-//            val homeViewModel: HomeViewModel = viewModel(
-//                factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-//            )
-//            var isFavoriteState by remember { mutableStateOf(false) }
-//
-//            MyPokedexTheme {
-//                AppNavigationHost(
-//                    navController = navController,
-//                    homeViewModel = homeViewModel,
-//                    favoriteToggled = isFavoriteState
-//                )
-//
-//                val activity = LocalActivity.current
-//                BackHandler {
-//                    val popped = navController.popBackStack()
-//                    if (!popped) {
-//                        // En la raíz: NO finish(); envía la tarea al background
-//                        activity?.moveTaskToBack(true)
-//                    }
-//                }
-//            }
-//        }
     }
 }

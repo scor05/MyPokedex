@@ -18,6 +18,7 @@ import com.uvg.mypokedex.ui.search.SortOption
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import com.uvg.mypokedex.ui.components.extractIdFromUrl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
