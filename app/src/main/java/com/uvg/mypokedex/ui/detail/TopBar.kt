@@ -3,6 +3,8 @@ package com.uvg.mypokedex.ui.detail
 import androidx.activity.compose.LocalActivity
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -11,7 +13,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.uvg.mypokedex.ui.features.auth.AuthViewModel
 import com.uvg.mypokedex.ui.features.home.HomeViewModel
 import com.uvg.mypokedex.ui.search.SearchToolsDialog
 
@@ -24,6 +28,7 @@ fun TopBar(
 ) {
     var showTools by remember { mutableStateOf(false) }
     val activity = LocalActivity.current
+    val authViewModel: AuthViewModel = viewModel()
 
     CenterAlignedTopAppBar(
         title = { Text(text = title, textAlign = TextAlign.Center) },
@@ -41,6 +46,14 @@ fun TopBar(
             }
         },
         actions = {
+            // Botón de cerrar sesión
+            IconButton(onClick = { authViewModel.signOut() }) {
+                Icon(
+                    imageVector = Icons.Filled.ExitToApp,
+                    contentDescription = "Cerrar Sesión"
+                )
+            }
+
             IconButton(onClick = { showTools = true }) {
                 Icon(
                     imageVector = Icons.Filled.Settings,
@@ -49,6 +62,7 @@ fun TopBar(
             }
         }
     )
+
 
     if (showTools) {
         SearchToolsDialog(

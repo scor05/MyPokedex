@@ -11,4 +11,6 @@ sealed class AppScreens(val route: String) {
     object SearchToolsDialog : AppScreens("search_tools_dialog")
 
     data object Favorites : AppScreens("favorites")
+
+    data object Exchange : AppScreens("exchange")
 }

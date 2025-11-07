@@ -21,32 +21,14 @@ import com.uvg.mypokedex.ui.features.home.HomeScreen
 import com.uvg.mypokedex.ui.features.home.HomeViewModel
 
 @Composable
-fun AppNavigationHost() {
-    val navController = rememberNavController()
-
-    NavHost(
-        navController = navController,
-        startDestination = AppScreens.HomeScreen.route // o tu pantalla inicial
-    ) {
-        // ... tus composables existentes
-
-        composable(AppScreens.Favorites.route) {
-            FavoritesScreen(
-                onNavigateBack = { navController.navigateUp() },
-                onPokemonClick = { pokemonId ->
-                    navController.navigate("detail/$pokemonId")
-                }
-            )
-        }
-    }
-}
-@Composable
 fun AppNavigationHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel,
     favoriteToggled: Boolean
 ) {
+    val navController = rememberNavController()
+
     NavHost(
         navController = navController,
         startDestination = AppScreens.HomeScreen.route,
@@ -73,6 +55,22 @@ fun AppNavigationHost(
                 )
             }
         }
+
+        //FAVORITES
+        composable(AppScreens.Favorites.route) {
+            FavoritesScreen(
+                onNavigateBack = { navController.navigateUp() },
+                onPokemonClick = { pokemonId ->
+                    navController.navigate("detail/$pokemonId")
+                }
+            )
+        }
+
+//        composable(AppScreens.Exchange.route) {
+//            ExchangeScreen(
+//                onNavigateBack = { navController.navigateUp() }
+//            )
+//        }
 
         // DETAIL
         composable(
