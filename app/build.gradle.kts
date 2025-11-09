@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.firebase.common.ktx)
     implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material3)
 
     // Tests
     testImplementation(libs.junit)
