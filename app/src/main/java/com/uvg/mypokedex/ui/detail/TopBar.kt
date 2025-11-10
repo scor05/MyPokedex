@@ -87,7 +87,7 @@ fun TopBar(
                 )
             }
 
-            // Botón de cerrar sesión (solo si está autenticado)
+            // Botón de cerrar sesión
             if (isAuthenticated) {
                 IconButton(onClick = {
                     authViewModel.signOut()

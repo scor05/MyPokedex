@@ -267,7 +267,7 @@ class FirebaseExchangeService {
         }
     }
 
-    // Limpiar intercambios antiguos (opcional, para limpieza)
+    // Limpiar intercambios antiguos
     suspend fun cleanupOldExchanges(olderThanMillis: Long = 24 * 60 * 60 * 1000): Result<Int> {
         return try {
             val cutoffTime = System.currentTimeMillis() - olderThanMillis

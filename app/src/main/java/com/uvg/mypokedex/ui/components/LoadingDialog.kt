@@ -71,7 +71,7 @@ fun AuthDialog(
                         onSubmit = {
                             scope.launch {
                                 viewModel.signInWithAlias(formState.alias)
-                                // Esperar un poco para que se complete la autenticación
+
                                 kotlinx.coroutines.delay(500)
                                 if (viewModel.isAuthenticated()) {
                                     onAuthSuccess()
