@@ -27,6 +27,7 @@ import com.uvg.mypokedex.ui.features.home.HomeViewModel
 import com.uvg.mypokedex.ui.features.auth.AuthUIState
 import com.uvg.mypokedex.ui.features.auth.AuthViewModel
 
+
 @Composable
 fun AppNavigationHost(
     navController: NavHostController,
@@ -37,10 +38,11 @@ fun AppNavigationHost(
     val authViewModel: AuthViewModel = viewModel()
     val authState by authViewModel.uiState.collectAsState()
 
-    // Determinar la ruta inicial basada en el estado de autenticación
+    // Determinar la ruta inicial UNA SOLA VEZ
     val startDestination = when (authState) {
         is AuthUIState.Authenticated -> AppScreens.HomeScreen.route
-        else -> "auth"
+        is AuthUIState.NotAuthenticated -> "auth"
+        else -> "auth" // Loading también va a auth
     }
 
     NavHost(
@@ -99,7 +101,6 @@ fun AppNavigationHost(
                     FavoritesScreen(
                         onNavigateBack = { navController.navigateUp() },
                         onPokemonClick = { pokemonId ->
-                            // Buscar el nombre del Pokémon por ID
                             navController.navigate("detail/pokemon-$pokemonId")
                         }
                     )
@@ -109,9 +110,24 @@ fun AppNavigationHost(
 
         // EXCHANGE
         composable(AppScreens.Exchange.route) {
-            ExchangeScreen(
-                onNavigateBack = { navController.navigateUp() }
-            )
+            Scaffold(
+                topBar = {
+                    TopBarBackOnly(
+                        navController = navController,
+                        title = "Intercambio"
+                    )
+                }
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    ExchangeScreen(
+                        onNavigateBack = { navController.navigateUp() }
+                    )
+                }
+            }
         }
 
         // DETAIL
@@ -146,10 +162,7 @@ fun AppNavigationHost(
         }
     }
 }
-
-
-
-
+//
 //@Composable
 //fun AppNavigationHost(
 //    navController: NavHostController,
@@ -157,13 +170,31 @@ fun AppNavigationHost(
 //    homeViewModel: HomeViewModel,
 //    favoriteToggled: Boolean
 //) {
-//    val navController = rememberNavController()
+//    val authViewModel: AuthViewModel = viewModel()
+//    val authState by authViewModel.uiState.collectAsState()
+//
+//    // Determinar la ruta inicial basada en el estado de autenticación
+//    val startDestination = when (authState) {
+//        is AuthUIState.Authenticated -> AppScreens.HomeScreen.route
+//        else -> "auth"
+//    }
 //
 //    NavHost(
 //        navController = navController,
-//        startDestination = AppScreens.HomeScreen.route,
+//        startDestination = startDestination,
 //        modifier = modifier
 //    ) {
+//        // AUTH SCREEN
+//        composable("auth") {
+//            AuthScreen(
+//                onAuthSuccess = {
+//                    navController.navigate(AppScreens.HomeScreen.route) {
+//                        popUpTo("auth") { inclusive = true }
+//                    }
+//                }
+//            )
+//        }
+//
 //        // HOME
 //        composable(AppScreens.HomeScreen.route) {
 //            Scaffold(
@@ -186,20 +217,33 @@ fun AppNavigationHost(
 //            }
 //        }
 //
-//        //FAVORITES
+//        // FAVORITES
 //        composable(AppScreens.Favorites.route) {
-//            FavoritesScreen(
-//                onNavigateBack = { navController.navigateUp() },
-//                onPokemonClick = { pokemonId ->
-//                    navController.navigate("detail/$pokemonId")
+//            Scaffold(
+//                topBar = {
+//                    TopBarBackOnly(
+//                        navController = navController,
+//                        title = "Favoritos"
+//                    )
 //                }
-//            )
+//            ) { innerPadding ->
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .padding(innerPadding)
+//                ) {
+//                    FavoritesScreen(
+//                        onNavigateBack = { navController.navigateUp() },
+//                        onPokemonClick = { pokemonId ->
+//                            // Buscar el nombre del Pokémon por ID
+//                            navController.navigate("detail/pokemon-$pokemonId")
+//                        }
+//                    )
+//                }
+//            }
 //        }
 //
-//        composable("auth") {
-//            AuthScreen(onAuthSuccess = { navController.navigate("home"){ popUpTo("auth"){ inclusive = true } } })
-//        }
-//
+//        // EXCHANGE
 //        composable(AppScreens.Exchange.route) {
 //            ExchangeScreen(
 //                onNavigateBack = { navController.navigateUp() }

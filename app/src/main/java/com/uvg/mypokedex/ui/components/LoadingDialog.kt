@@ -1,5 +1,6 @@
 package com.uvg.mypokedex.ui.components
 
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -13,6 +14,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uvg.mypokedex.ui.features.auth.AuthFormState
 import com.uvg.mypokedex.ui.features.auth.AuthViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun AuthDialog(
@@ -22,6 +24,7 @@ fun AuthDialog(
 ) {
     val formState by viewModel.formState.collectAsState()
     var authMode by remember { mutableStateOf(AuthMode.ALIAS) }
+    val scope = rememberCoroutineScope()
 
     Dialog(onDismissRequest = onDismiss) {
         Card(
@@ -66,8 +69,14 @@ fun AuthDialog(
                         formState = formState,
                         onAliasChange = viewModel::updateAlias,
                         onSubmit = {
-                            viewModel.signInWithAlias(formState.alias)
-                            onAuthSuccess()
+                            scope.launch {
+                                viewModel.signInWithAlias(formState.alias)
+                                // Esperar un poco para que se complete la autenticación
+                                kotlinx.coroutines.delay(500)
+                                if (viewModel.isAuthenticated()) {
+                                    onAuthSuccess()
+                                }
+                            }
                         }
                     )
                     AuthMode.EMAIL_LOGIN -> EmailLoginContent(
@@ -75,8 +84,13 @@ fun AuthDialog(
                         onEmailChange = viewModel::updateEmail,
                         onPasswordChange = viewModel::updatePassword,
                         onSubmit = {
-                            viewModel.signInWithEmail(formState.email, formState.password)
-                            onAuthSuccess()
+                            scope.launch {
+                                viewModel.signInWithEmail(formState.email, formState.password)
+                                kotlinx.coroutines.delay(500)
+                                if (viewModel.isAuthenticated()) {
+                                    onAuthSuccess()
+                                }
+                            }
                         }
                     )
                     AuthMode.EMAIL_SIGNUP -> EmailSignupContent(
@@ -85,12 +99,17 @@ fun AuthDialog(
                         onPasswordChange = viewModel::updatePassword,
                         onDisplayNameChange = viewModel::updateDisplayName,
                         onSubmit = {
-                            viewModel.signUpWithEmail(
-                                formState.email,
-                                formState.password,
-                                formState.displayName
-                            )
-                            onAuthSuccess()
+                            scope.launch {
+                                viewModel.signUpWithEmail(
+                                    formState.email,
+                                    formState.password,
+                                    formState.displayName
+                                )
+                                kotlinx.coroutines.delay(500)
+                                if (viewModel.isAuthenticated()) {
+                                    onAuthSuccess()
+                                }
+                            }
                         }
                     )
                 }

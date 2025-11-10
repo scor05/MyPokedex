@@ -33,21 +33,6 @@ class MainActivity : ComponentActivity() {
                 val authState by authViewModel.uiState.collectAsState()
                 var isFavoriteState by remember { mutableStateOf(false) }
 
-                // Redirigir a auth si no está autenticado
-                LaunchedEffect(authState) {
-                    when (authState) {
-                        is AuthUIState.NotAuthenticated -> {
-                            navController.navigate("auth") {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        }
-                        is AuthUIState.Authenticated -> {
-                            // Ya está en home o donde corresponda
-                        }
-                        else -> { /* Loading or Error */ }
-                    }
-                }
-
                 AppNavigationHost(
                     navController = navController,
                     homeViewModel = homeViewModel,
@@ -65,36 +50,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-//class MainActivity : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//
-//        // Inicializar Firebase
-//        FirebaseApp.initializeApp(this)
-//
-//        setContent {
-//            MyPokedexTheme {
-//                val navController = rememberNavController()
-//                val homeViewModel: HomeViewModel = viewModel(
-//                    factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-//                )
-//                var isFavoriteState by remember { mutableStateOf(false) }
-//
-//                AppNavigationHost(
-//                    navController = navController,
-//                    homeViewModel = homeViewModel,
-//                    favoriteToggled = isFavoriteState
-//                )
-//
-//                val activity = LocalActivity.current
-//                BackHandler {
-//                    val popped = navController.popBackStack()
-//                    if (!popped) {
-//                        activity?.moveTaskToBack(true)
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}

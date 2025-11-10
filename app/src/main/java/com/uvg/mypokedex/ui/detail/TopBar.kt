@@ -24,7 +24,6 @@ import com.uvg.mypokedex.ui.features.auth.AuthViewModel
 import com.uvg.mypokedex.ui.features.home.HomeViewModel
 import com.uvg.mypokedex.ui.search.SearchToolsDialog
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
@@ -119,6 +118,7 @@ fun TopBar(
             onDismiss = { showAuthDialog = false },
             onAuthSuccess = {
                 showAuthDialog = false
+                // No navegar aquí, solo cerrar el dialog
             }
         )
     }
@@ -136,64 +136,3 @@ fun TopBar(
         )
     }
 }
-
-
-
-//
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun TopBar(
-//    navController: NavController,
-//    title: String,
-//    homeViewModel: HomeViewModel
-//) {
-//    var showTools by remember { mutableStateOf(false) }
-//    val activity = LocalActivity.current
-//    val authViewModel: AuthViewModel = viewModel()
-//
-//    CenterAlignedTopAppBar(
-//        title = { Text(text = title, textAlign = TextAlign.Center) },
-//        navigationIcon = {
-//            IconButton(onClick = {
-//                val popped = navController.popBackStack()
-//                if (!popped) {
-//                    activity?.moveTaskToBack(true)
-//                }
-//            }) {
-//                Icon(
-//                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                    contentDescription = "Atrás"
-//                )
-//            }
-//        },
-//        actions = {
-//            // Botón de cerrar sesión
-//            IconButton(onClick = { authViewModel.signOut() }) {
-//                Icon(
-//                    imageVector = Icons.Filled.ExitToApp,
-//                    contentDescription = "Cerrar Sesión"
-//                )
-//            }
-//
-//            IconButton(onClick = { showTools = true }) {
-//                Icon(
-//                    imageVector = Icons.Filled.Settings,
-//                    contentDescription = "Configuraciones"
-//                )
-//            }
-//        }
-//    )
-//
-//
-//    if (showTools) {
-//        SearchToolsDialog(
-//            favorites = homeViewModel.favoritesToggle,
-//            onFavoriteChange = { homeViewModel.setFavoritesOnly(it) },
-//            selected = homeViewModel.sortOption,
-//            ascending = homeViewModel.ascending,
-//            onSelectedChange = { homeViewModel.setSortOptionCustom(it) },
-//            onAscendingChange = { homeViewModel.setAscendingCustom(it) },
-//            onDismiss = { showTools = false }
-//        )
-//    }
-//}
